@@ -1,19 +1,106 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ATLAS AI</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08111e">
+<title>ATLAS AI — Agent Runtime</title>
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:#090e1a;color:#e8f1ff}header{padding:20px 24px;border-bottom:1px solid #26334d;display:flex;align-items:center;justify-content:space-between}h1{font-size:22px;margin:0;letter-spacing:2px}h1 span{color:#67b8ff}.sub{font-size:12px;color:#93a7c6}.shell{max-width:950px;margin:0 auto;min-height:calc(100vh - 85px);display:flex;flex-direction:column;padding:20px;gap:16px}.settings{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:#121c30;padding:14px;border:1px solid #273956;border-radius:14px}input,select,button{font:inherit;border-radius:9px;padding:11px;border:1px solid #334765;background:#0b1528;color:#e8f1ff}input{flex:1;min-width:210px}button{background:#2368c9;border-color:#377fe0;cursor:pointer;font-weight:600}button:hover{background:#347fe4}#chat{flex:1;min-height:350px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;padding:8px}.message{max-width:85%;padding:15px 17px;border-radius:15px;white-space:pre-wrap;line-height:1.55;overflow-wrap:anywhere}.assistant{align-self:flex-start;background:#16223a;border:1px solid #2a3a59}.user{align-self:flex-end;background:#174e92}.composer{display:flex;gap:10px}.composer input{width:100%;padding:16px}.muted{color:#a6b7d1;font-size:13px}.pill{border:1px solid #2e4c74;border-radius:30px;padding:5px 10px;font-size:12px;color:#88bfff}@media(max-width:560px){.shell{padding:12px}header{padding:14px}.message{max-width:95%}.settings{flex-direction:column;align-items:stretch}}
-</style></head><body><header><div><h1>ATLAS <span>AI</span></h1><div class="sub">CLOUD AGENT • PROTOTYPE</div></div><div class="pill">V0.1</div></header>
-<main class="shell"><div class="settings"><label for="mode">Mode</label><select id="mode"><option value="demo">Demo</option><option value="live">Live AI</option></select><input id="endpoint" placeholder="Cloudflare Worker URL (for Live mode)" aria-label="Worker endpoint"><button id="clear" type="button">Clear</button></div>
-<div id="chat" aria-live="polite"><div class="message assistant">Welcome to ATLAS AI. This is the cloud-first starter. Choose Demo to explore the interface, or deploy the Worker and select Live AI for model-powered responses. Autonomous coding tools are not enabled yet.</div></div>
-<form class="composer" id="form"><input id="prompt" required autocomplete="off" placeholder="Ask ATLAS anything..." aria-label="Your message"><button id="send" type="submit">Send</button></form><div class="muted">API credentials belong in Cloudflare Worker secrets, never in this page. Live mode requires deployment and may incur model-provider charges.</div></main>
+:root{color-scheme:dark;--bg:#08111e;--surface:#111d2f;--surface2:#15263e;--line:#2b4260;--text:#eff6ff;--muted:#95abc5;--accent:#69c3ff;--glow:#3d8dea;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse 90% 60% at 50% -18%,#183a63 0,transparent 70%),var(--bg);color:var(--text);min-height:100vh}
+header{padding:20px max(20px,calc((100vw - 1280px)/2));border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px}
+h1{margin:0;font-size:21px;letter-spacing:.16em;font-weight:780}h1 span{color:var(--accent)}
+header small{color:var(--muted);font-size:11px;letter-spacing:.14em}
+.pill{border:1px solid var(--line);border-radius:25px;color:var(--accent);padding:7px 11px;font-size:12px}
+.layout{max-width:1300px;margin:auto;padding:20px;display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:19px;min-height:calc(100vh - 80px)}
+aside,.main{background:rgba(16,27,44,.89);border:1px solid var(--line);border-radius:17px;overflow:hidden}
+aside{padding:20px;align-self:start}aside h2{font-size:13px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin:0 0 15px}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
+label{font-size:12px;color:#b3c6dc;font-weight:700}
+input,select,textarea{font:inherit;background:#091725;color:var(--text);border:1px solid #35516e;border-radius:9px;padding:12px;width:100%;outline:none}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px #69c3ff26}
+textarea{resize:vertical;min-height:70px;max-height:220px}
+button{font:inherit;border-radius:9px;background:#2369b9;border:1px solid #4b91e0;color:white;font-weight:700;padding:11px 14px;cursor:pointer}
+button:hover{background:#307ccf}button:disabled{opacity:.55;cursor:wait}
+button.secondary{background:transparent;border-color:#365171;color:#d0e1f8}
+.small{font-size:12px;padding:9px 10px}
+.helper{font-size:12px;color:var(--muted);line-height:1.6}
+hr{border:0;border-top:1px solid var(--line);margin:19px 0}
+.status{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.dot{background:#7b90aa;width:7px;height:7px;flex-shrink:0;border-radius:50%}
+.dot.ok{background:#4de5aa}.dot.err{background:#f6af6c}
+.main{display:flex;flex-direction:column;min-height:660px}
+.main-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.main-head strong{font-size:15px}.main-head small{display:block;color:var(--muted);margin-top:3px;font-size:12px}
+.main-head button{flex-shrink:0}
+#chat{flex:1;display:flex;flex-direction:column;gap:18px;padding:24px 20px;min-height:370px;overflow-y:auto}
+.bubble{max-width:91%;border-radius:14px;padding:14px 17px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.bubble.assistant{background:#1a2a43;border:1px solid #344c6a;align-self:flex-start}
+.bubble.user{background:#214c87;align-self:flex-end}
+.bubble.error{border-color:#a05e4f;color:#ffd8c5}
+.trace{font-size:12px;color:#b5cce7;padding:9px 13px;background:#0c1a2b;border:1px solid #2b4260;border-radius:10px;align-self:flex-start;max-width:95%;line-height:1.5}
+.trace summary{cursor:pointer;color:var(--accent);font-weight:700}
+.trace ul{padding-left:20px;margin-bottom:4px}
+.composer{display:flex;align-items:flex-end;gap:10px;padding:16px 20px;border-top:1px solid var(--line)}
+.composer textarea{flex:1;min-width:0;min-height:56px}
+.note{padding:0 20px 16px;font-size:11px;color:var(--muted)}
+#results{display:flex;flex-direction:column;gap:8px;margin-top:10px;max-height:280px;overflow-y:auto}
+.result{background:#11233a;padding:10px;border:1px solid #2b4260;border-radius:9px;font-size:11px;overflow-wrap:anywhere}
+.result a{color:#b8dbff;text-decoration:none;font-weight:700}
+.result p{font-size:11px;margin:6px 0 0;color:#a6b8ce}
+.footlink{color:#95caff;text-decoration:none;font-size:12px}
+@media(max-width:790px){.layout{grid-template-columns:1fr;gap:12px;padding:10px}.main{min-height:65vh}aside{padding:15px}header{padding:16px}.main-head,#chat,.composer{padding:15px}.bubble{max-width:97%}header h1{font-size:18px}}
+</style>
+</head>
+<body>
+<header>
+<div><h1>ATLAS <span>AI</span></h1><small>AGENT RUNTIME · CLOUD-FIRST</small></div>
+<span class="pill">V0.2 · REFERENCE-POWERED</span>
+</header>
+<div class="layout">
+<aside aria-label="Agent settings">
+<h2>Connection</h2>
+<div class="field"><label for="endpoint">Cloudflare Worker URL</label><input id="endpoint" type="url" autocomplete="url" placeholder="https://atlas-agent-api.your-name.workers.dev"></div>
+<div class="field"><label for="access">Operator access key</label><input id="access" type="password" autocomplete="off" placeholder="Cloudflare ATLAS_ACCESS_KEY secret"></div>
+<div class="field"><label for="mode">Runtime</label><select id="mode"><option value="live">Live agent</option><option value="demo">UI demo only</option></select></div>
+<button id="connect" class="secondary small" type="button">Check Worker</button>
+<div id="status" class="status" style="margin-top:12px"><span class="dot"></span>Not connected</div>
+<p class="helper">Your access key is used only for requests and is not saved in browser storage. The Worker URL may be remembered on this device.</p>
+<hr>
+<h2>Reference archive</h2>
+<p class="helper">Search the complete imported CL4R1T4S snapshot. Matches are loaded as untrusted source excerpts, not executable instructions.</p>
+<div class="field"><label for="search">Search files and tool definitions</label><input id="search" placeholder="Claude Code agent tools"></div>
+<button id="searchBtn" class="secondary small" type="button">Search archive</button>
+<div id="results" aria-live="polite"></div>
+<hr>
+<h2>Enabled tools</h2>
+<p class="helper">✓ Search reference archive<br>✓ Read source excerpts<br>✓ List ATLAS GitHub files<br>✓ Read ATLAS GitHub files<br>— Repository writes disabled<br>— Code execution disabled</p>
+<a class="footlink" target="_blank" rel="noopener noreferrer" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI">View ATLAS source ↗</a>
+</aside>
+<section class="main" aria-label="AI conversation">
+<div class="main-head"><div><strong>ATLAS · Development Agent</strong><small>Hosted model + reference retrieval + read-only GitHub tools</small></div><button class="secondary small" id="clear" type="button">New chat</button></div>
+<div id="chat" aria-live="polite"><div class="bubble assistant">ATLAS v0.2 is ready for configuration. To enable live responses, deploy the Worker and its AI binding, then enter your Worker URL and operator key.
+
+You can ask me to search the imported Claude Code archive, explain its architecture, or inspect files in the ATLAS GitHub repository. Code execution and repository-writing actions are not enabled.</div></div>
+<form id="composer" class="composer"><textarea id="message" required placeholder="Ask ATLAS to inspect a tool, file, or workflow..." aria-label="Chat message"></textarea><button id="send" type="submit">Send</button></form>
+<div class="note">Agent actions and archival sources are shown alongside responses. Imported prompts never become trusted system instructions.</div>
+</section>
+</div>
 <script>
-const chat=document.querySelector("#chat"),form=document.querySelector("#form"),promptBox=document.querySelector("#prompt"),mode=document.querySelector("#mode"),endpoint=document.querySelector("#endpoint"),send=document.querySelector("#send");let messages=[];
-function bubble(role,content){const el=document.createElement("div");el.className="message "+role;el.textContent=content;chat.append(el);chat.scrollTop=chat.scrollHeight;return el;}
-document.querySelector("#clear").onclick=()=>{messages=[];chat.innerHTML="";bubble("assistant","Conversation cleared.");};
-form.onsubmit=async e=>{e.preventDefault();const text=promptBox.value.trim();if(!text)return;promptBox.value="";bubble("user",text);messages.push({role:"user",content:text});send.disabled=true;
-if(mode.value==="demo"){const reply="Demo mode is active. Your message was received, but no AI model is connected. Deploy the Cloudflare Worker and select Live AI to receive generated responses.";bubble("assistant",reply);messages.push({role:"assistant",content:reply});send.disabled=false;return;}
-const url=endpoint.value.trim().replace(/\/$/,"");if(!/^https:\/\//.test(url)){bubble("assistant","Please enter a valid HTTPS Worker URL.");send.disabled=false;return;}
-const pending=bubble("assistant","Thinking...");
-try{const r=await fetch(url+"/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages})});const j=await r.json();if(!r.ok)throw Error(j.error||"Request failed");pending.textContent=j.reply||"No response";messages.push({role:"assistant",content:pending.textContent});}catch(err){pending.textContent="Connection error: "+err.message;}finally{send.disabled=false;promptBox.focus();}
-};
-</script></body></html>
+const $=id=>document.getElementById(id);
+const endpoint=$("endpoint"),access=$("access"),mode=$("mode"),status=$("status"),chat=$("chat"),send=$("send"),message=$("message");
+let history=[];
+try{endpoint.value=localStorage.getItem("atlas-worker-url")||"";}catch{}
+endpoint.addEventListener("change",()=>{try{localStorage.setItem("atlas-worker-url",endpoint.value.trim());}catch{}});
+function bubble(role,text,err=false){const el=document.createElement("div");el.className="bubble "+role+(err?" error":"");el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;return el;}
+function workerUrl(){const value=endpoint.value.trim().replace(/\/$/,"");try{const url=new URL(value);if(url.protocol!=="https:")throw Error();return url.origin;}catch{throw Error("Enter a valid HTTPS Cloudflare Worker URL");}}
+async function api(path,data){const response=await fetch(workerUrl()+path,{method:"POST",headers:{"Content-Type":"application/json","X-Atlas-Access-Key":access.value},body:JSON.stringify(data)});let result;try{result=await response.json();}catch{throw Error("Worker returned an invalid response");}if(!response.ok)throw Error(result.error||("HTTP "+response.status));return result;}
+$("connect").onclick=async()=>{status.innerHTML='<span class="dot"></span>Checking…';try{const r=await fetch(workerUrl()+"/health");if(!r.ok)throw Error("Worker returned "+r.status);const j=await r.json();status.innerHTML='<span class="dot '+(j.aiConfigured&&j.accessKeyConfigured?"ok":"err")+'"></span>'+("Worker v"+j.version+" · AI "+(j.aiConfigured?"bound":"missing")+" · access "+(j.accessKeyConfigured?"configured":"missing"));}catch(err){status.innerHTML='<span class="dot err"></span>'+err.message;}};
+$("clear").onclick=()=>{history=[];chat.innerHTML="";bubble("assistant","New conversation started.");};
+$("searchBtn").onclick=async()=>{const value=$("search").value.trim(),out=$("results");if(!value)return;out.textContent="Searching reference index…";try{const result=await api("/search",{query:value});out.textContent="";const count=document.createElement("p");count.className="helper";count.textContent=result.matches.length+" matches from "+result.totalFiles+" indexed text files";out.append(count);for(const item of result.matches){const card=document.createElement("div");card.className="result";const link=document.createElement("a");link.target="_blank";link.rel="noopener noreferrer";link.href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/external/CL4R1T4S/"+item.path.split("/").map(encodeURIComponent).join("/");link.textContent=item.path+" ↗";const excerpt=document.createElement("p");excerpt.textContent=item.snippet;card.append(link,excerpt);out.append(card);}}catch(err){out.textContent="Search failed: "+err.message;}};
+$("composer").onsubmit=async event=>{event.preventDefault();const text=message.value.trim();if(!text)return;message.value="";bubble("user",text);history.push({role:"user",content:text});send.disabled=true;const working=bubble("assistant","Running…");try{if(mode.value==="demo"){working.textContent="This is UI demo mode. Choose Live agent and configure Cloudflare Worker to call the hosted model and tools.";history.push({role:"assistant",content:working.textContent});}else{const result=await api("/chat",{messages:history.slice(-12)});working.textContent=result.reply||"No answer returned.";history.push({role:"assistant",content:working.textContent});if(Array.isArray(result.trace)&&result.trace.length){const details=document.createElement("details");details.className="trace";const summary=document.createElement("summary");summary.textContent="Agent activity · "+result.trace.length+" step(s)";const list=document.createElement("ul");for(const t of result.trace){const li=document.createElement("li");li.textContent=t.tool+" — "+(t.error||t.status||"sources loaded");if(Array.isArray(t.sources)&&t.sources.length)li.textContent+=": "+t.sources.join(", ");list.append(li);}details.append(summary,list);chat.append(details);}}}catch(err){working.textContent="Request failed: "+err.message;working.classList.add("error");history.pop();}finally{send.disabled=false;chat.scrollTop=chat.scrollHeight;message.focus();}};
+message.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit();}});
+</script>
+</body>
+</html>
