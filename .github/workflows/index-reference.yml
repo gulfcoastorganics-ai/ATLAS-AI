@@ -1,0 +1,36 @@
+name: Build searchable CL4R1T4S reference index
+
+on:
+  push:
+    paths:
+      - "external/CL4R1T4S/**"
+      - "scripts/build_reference_index.py"
+      - ".github/workflows/index-reference.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Build index from complete upstream snapshot
+        run: python3 scripts/build_reference_index.py
+      - name: Publish generated index
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reference-index.json
+          if git diff --cached --quiet; then
+            echo "Index is unchanged."
+            exit 0
+          fi
+          git commit -m "Refresh indexed reference chunks [skip ci]"
+          git push origin HEAD:main
