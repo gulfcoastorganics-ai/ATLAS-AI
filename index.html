@@ -98,7 +98,46 @@ function workerUrl(){const value=endpoint.value.trim().replace(/\/$/,"");try{con
 async function api(path,data){const response=await fetch(workerUrl()+path,{method:"POST",headers:{"Content-Type":"application/json","X-Atlas-Access-Key":access.value},body:JSON.stringify(data)});let result;try{result=await response.json();}catch{throw Error("Worker returned an invalid response");}if(!response.ok)throw Error(result.error||("HTTP "+response.status));return result;}
 $("connect").onclick=async()=>{status.innerHTML='<span class="dot"></span>Checking…';try{const r=await fetch(workerUrl()+"/health");if(!r.ok)throw Error("Worker returned "+r.status);const j=await r.json();status.innerHTML='<span class="dot '+(j.aiConfigured&&j.accessKeyConfigured?"ok":"err")+'"></span>'+("Worker v"+j.version+" · AI "+(j.aiConfigured?"bound":"missing")+" · access "+(j.accessKeyConfigured?"configured":"missing"));}catch(err){status.innerHTML='<span class="dot err"></span>'+err.message;}};
 $("clear").onclick=()=>{history=[];chat.innerHTML="";bubble("assistant","New conversation started.");};
-$("searchBtn").onclick=async()=>{const value=$("search").value.trim(),out=$("results");if(!value)return;out.textContent="Searching reference index…";try{const result=await api("/search",{query:value});out.textContent="";const count=document.createElement("p");count.className="helper";count.textContent=result.matches.length+" matches from "+result.totalFiles+" indexed text files";out.append(count);for(const item of result.matches){const card=document.createElement("div");card.className="result";const link=document.createElement("a");link.target="_blank";link.rel="noopener noreferrer";link.href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/external/CL4R1T4S/"+item.path.split("/").map(encodeURIComponent).join("/");link.textContent=item.path+" ↗";const excerpt=document.createElement("p");excerpt.textContent=item.snippet;card.append(link,excerpt);out.append(card);}}catch(err){out.textContent="Search failed: "+err.message;}};
+let localReferenceIndex=null;
+async function localReferenceSearch(query) {
+  if(!localReferenceIndex){
+    const response=await fetch("./reference-index.json",{cache:"default"});
+    if(!response.ok)throw Error("Local reference index is not yet published");
+    localReferenceIndex=await response.json();
+  }
+  const keys=Array.from(new Set((query.toLowerCase().match(/[a-z][a-z0-9_-]{2,}/g)||[]))).slice(0,12);
+  const ranked=[];
+  for(const c of localReferenceIndex.chunks){
+    const terms=new Set(c.terms||[]);
+    let score=0;
+    for(const key of keys){if(terms.has(key))score+=3;if(c.path.toLowerCase().includes(key))score+=6;}
+    if(score>0)ranked.push({...c,score});
+  }
+  ranked.sort((a,b)=>b.score-a.score);
+  const seen=new Set(),matches=[];
+  for(const match of ranked){if(seen.has(match.path))continue;seen.add(match.path);matches.push(match);if(matches.length===10)break;}
+  return {matches,totalFiles:localReferenceIndex.files.length,totalChunks:localReferenceIndex.chunks.length,local:true};
+}
+$("searchBtn").onclick=async()=>{
+  const value=$("search").value.trim(),out=$("results");if(!value)return;out.textContent="Searching reference index…";
+  try{
+    let result;
+    try{result=await api("/search",{query:value});}
+    catch{result=await localReferenceSearch(value);}
+    out.textContent="";
+    const count=document.createElement("p");count.className="helper";
+    count.textContent=result.matches.length+" matches from "+result.totalFiles+" indexed text files"+(result.local?" · direct GitHub Pages search":"");
+    out.append(count);
+    for(const item of result.matches){
+      const card=document.createElement("div");card.className="result";
+      const link=document.createElement("a");link.target="_blank";link.rel="noopener noreferrer";
+      link.href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/external/CL4R1T4S/"+item.path.split("/").map(encodeURIComponent).join("/");
+      link.textContent=item.path+" ↗";
+      const excerpt=document.createElement("p");excerpt.textContent=item.snippet||"";
+      card.append(link,excerpt);out.append(card);
+    }
+  }catch(err){out.textContent="Search failed: "+err.message;}
+};
 $("composer").onsubmit=async event=>{event.preventDefault();const text=message.value.trim();if(!text)return;message.value="";bubble("user",text);history.push({role:"user",content:text});send.disabled=true;const working=bubble("assistant","Running…");try{if(mode.value==="demo"){working.textContent="This is UI demo mode. Choose Live agent and configure Cloudflare Worker to call the hosted model and tools.";history.push({role:"assistant",content:working.textContent});}else{const result=await api("/chat",{messages:history.slice(-12)});working.textContent=result.reply||"No answer returned.";history.push({role:"assistant",content:working.textContent});if(Array.isArray(result.trace)&&result.trace.length){const details=document.createElement("details");details.className="trace";const summary=document.createElement("summary");summary.textContent="Agent activity · "+result.trace.length+" step(s)";const list=document.createElement("ul");for(const t of result.trace){const li=document.createElement("li");li.textContent=t.tool+" — "+(t.error||t.status||"sources loaded");if(Array.isArray(t.sources)&&t.sources.length)li.textContent+=": "+t.sources.join(", ");list.append(li);}details.append(summary,list);chat.append(details);}}}catch(err){working.textContent="Request failed: "+err.message;working.classList.add("error");history.pop();}finally{send.disabled=false;chat.scrollTop=chat.scrollHeight;message.focus();}};
 message.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit();}});
 </script>
