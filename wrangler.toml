@@ -4,4 +4,14 @@ compatibility_date = "2026-11-01"
 
 [vars]
 ALLOWED_ORIGIN = "https://gulfcoastorganics-ai.github.io"
-MODEL_ID = "openai/gpt-oss-20b"
+
+[ai]
+binding = "AI"
+
+[[ratelimits]]
+name = "CHAT_RATE_LIMITER"
+namespace_id = "931415"
+
+[ratelimits.simple]
+limit = 10
+period = 60
