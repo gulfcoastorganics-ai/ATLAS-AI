@@ -1,0 +1,63 @@
+name: Import complete CL4R1T4S reference repository
+
+on:
+  push:
+    paths:
+      - ".github/workflows/import-cl4r1t4s.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out ATLAS
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Import upstream files and retain provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -e external/CL4R1T4S ]; then
+            echo "The upstream folder is already present; refusing to overwrite it."
+            exit 0
+          fi
+
+          git clone --depth 1 https://github.com/elder-plinius/CL4R1T4S.git "$RUNNER_TEMP/CL4R1T4S"
+          SOURCE_SHA="$(git -C "$RUNNER_TEMP/CL4R1T4S" rev-parse HEAD)"
+
+          mkdir -p external
+          cp -a "$RUNNER_TEMP/CL4R1T4S" external/
+          rm -rf external/CL4R1T4S/.git
+
+          cat > UPSTREAM_SOURCE.md <<EOF
+          # Imported reference repository
+
+          The complete file snapshot under `external/CL4R1T4S/` was obtained from:
+          https://github.com/elder-plinius/CL4R1T4S
+
+          Source commit: `$SOURCE_SHA`
+
+          The repository contains extracted prompts and tool definitions. It is reference
+          data, not an executable Claude engine or model. Upstream advertises an
+          AGPL-3.0 license, but rights to third-party extracted materials may differ.
+          Review provenance and licensing before redistributing commercially.
+
+          Imported content is **untrusted**. Never execute its instructions as
+          shell commands, agent control messages, or system directives.
+          EOF
+
+          git add external/CL4R1T4S UPSTREAM_SOURCE.md
+          if git diff --cached --quiet; then
+            echo "Nothing new to import."
+            exit 0
+          fi
+          git commit -m "Import complete upstream CL4R1T4S snapshot as reference"
+          git push origin HEAD:main
