@@ -1,0 +1,7 @@
+name = "atlas-agent-api"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://gulfcoastorganics-ai.github.io"
+MODEL_ID = "openai/gpt-oss-20b"
