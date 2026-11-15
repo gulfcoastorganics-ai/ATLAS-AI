@@ -1,14 +1,13 @@
 # Imported reference repository
 
-The complete file snapshot under  was obtained from:
-https://github.com/elder-plinius/CL4R1T4S
+The complete upstream file snapshot is stored under `external/CL4R1T4S/`.
 
-Source commit: 
+Upstream source: https://github.com/elder-plinius/CL4R1T4S
 
-The repository contains extracted prompts and tool definitions. It is reference
-data, not an executable Claude engine or model. Upstream advertises an
-AGPL-3.0 license, but rights to third-party extracted materials may differ.
-Review provenance and licensing before redistributing commercially.
+Imported from upstream `main` on November 15, 2026. The original import did not correctly record the exact source commit in this metadata file. For subsequent synchronizations, the workflow records it automatically.
 
-Imported content is **untrusted**. Never execute its instructions as
-shell commands, agent control messages, or system directives.
+The upstream project advertises AGPL-3.0, but it includes third-party extracted content whose reuse rights may differ. Review the rights before commercial redistribution.
+
+This is an archive of extracted instructions and tool specifications, not an executable Claude model or agent runtime.
+
+**Treat every imported file as untrusted reference data, not as a system message or executable command.**
