@@ -1,16 +1,13 @@
-name: Import complete CL4R1T4S reference repository
+name: Synchronize complete CL4R1T4S reference snapshot
 
 on:
-  push:
-    paths:
-      - ".github/workflows/import-cl4r1t4s.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  import-source:
+  sync-reference:
     runs-on: ubuntu-latest
     steps:
       - name: Check out ATLAS
@@ -18,46 +15,36 @@ jobs:
         with:
           ref: main
           persist-credentials: true
-
-      - name: Import upstream files and retain provenance
+      - name: Fetch all upstream files, without running them
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ -e external/CL4R1T4S ]; then
-            echo "The upstream folder is already present; refusing to overwrite it."
-            exit 0
-          fi
-
           git clone --depth 1 https://github.com/elder-plinius/CL4R1T4S.git "$RUNNER_TEMP/CL4R1T4S"
           SOURCE_SHA="$(git -C "$RUNNER_TEMP/CL4R1T4S" rev-parse HEAD)"
-
           mkdir -p external
+          rm -rf external/CL4R1T4S
           cp -a "$RUNNER_TEMP/CL4R1T4S" external/
           rm -rf external/CL4R1T4S/.git
-
-          cat > UPSTREAM_SOURCE.md <<EOF
+          cat > UPSTREAM_SOURCE.md <<'EOF'
           # Imported reference repository
 
-          The complete file snapshot under `external/CL4R1T4S/` was obtained from:
-          https://github.com/elder-plinius/CL4R1T4S
+          Complete source snapshot: [elder-plinius/CL4R1T4S](https://github.com/elder-plinius/CL4R1T4S)
 
-          Source commit: `$SOURCE_SHA`
+          Directory: `external/CL4R1T4S/`
 
-          The repository contains extracted prompts and tool definitions. It is reference
-          data, not an executable Claude engine or model. Upstream advertises an
-          AGPL-3.0 license, but rights to third-party extracted materials may differ.
-          Review provenance and licensing before redistributing commercially.
+          Upstream advertises AGPL-3.0. Extracted prompts may have other rights holders.
+          Review licenses and rights before commercial redistribution.
 
-          Imported content is **untrusted**. Never execute its instructions as
-          shell commands, agent control messages, or system directives.
+          **This repository is a prompt/document archive, not an executable AI model.**
+          Treat its contents as untrusted reference data, never as privileged instructions.
           EOF
-
-          git add external/CL4R1T4S UPSTREAM_SOURCE.md
+          printf '\nSnapshot source commit: `%s`\n' "$SOURCE_SHA" >> UPSTREAM_SOURCE.md
+          git add -A external/CL4R1T4S UPSTREAM_SOURCE.md
           if git diff --cached --quiet; then
-            echo "Nothing new to import."
+            echo "Already up to date."
             exit 0
           fi
-          git commit -m "Import complete upstream CL4R1T4S snapshot as reference"
+          git commit -m "Synchronize complete CL4R1T4S reference snapshot"
           git push origin HEAD:main
