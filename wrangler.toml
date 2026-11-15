@@ -4,6 +4,8 @@ compatibility_date = "2026-11-01"
 
 [vars]
 ALLOWED_ORIGIN = "https://gulfcoastorganics-ai.github.io"
+REFERENCE_INDEX_URL = "https://gulfcoastorganics-ai.github.io/ATLAS-AI/reference-index.json"
+MODEL_ID = "@cf/google/gemma-4-26b-a4b-it"
 
 [ai]
 binding = "AI"
