@@ -1,0 +1,47 @@
+name: Validate ATLAS agent runtime
+
+on:
+  push:
+    paths:
+      - "worker.js"
+      - "index.html"
+      - "scripts/build_reference_index.py"
+      - "tests/**"
+      - ".github/workflows/validate-agent.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Worker JavaScript syntax
+        run: node --check worker.js
+      - name: Validate embedded web-app JavaScript syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          body = Path("index.html").read_text()
+          assert body.count("<script>") == 1
+          code = body.split("<script>",1)[1].split("</script>",1)[0]
+          Path("/tmp/atlas-frontend.js").write_text(code)
+          PY
+          node --check /tmp/atlas-frontend.js
+      - name: Run mocked Cloudflare Worker tests
+        run: node tests/worker.test.mjs
+      - name: Check archive index build is deterministic
+        run: |
+          python3 scripts/build_reference_index.py --output /tmp/reference-index-check.json
+          python3 - <<'PY'
+          import json
+          with open("/tmp/reference-index-check.json") as f:
+              data=json.load(f)
+          assert data["schema"]==1
+          assert len(data["files"])>10
+          assert len(data["chunks"])>100
+          assert any(x["path"]=="ANTHROPIC/CLAUDE-CODE-FABLE-5.2.txt" for x in data["files"])
+          print(f'Index validated: {len(data["files"])} files, {len(data["chunks"])} chunks')
+          PY
