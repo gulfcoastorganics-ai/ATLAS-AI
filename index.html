@@ -336,6 +336,7 @@ svg{display:block;flex-shrink:0}
       <button id="newChat" type="button" class="nav-action primary"><span data-icon="plus"></span> New chat</button>
       <button id="sidebarSearch" type="button" class="nav-action"><span data-icon="search"></span> Search archive</button>
       <button id="sidebarCode" type="button" class="nav-action code-link"><span data-icon="code"></span> Code workspace</button>
+      <a class="nav-action" style="text-decoration:none" href="./autonomy.html" aria-label="Open Autonomous Development Mode"><span data-icon="code"></span> Autonomous development</a>
       <button id="sidebarSettings" type="button" class="nav-action"><span data-icon="sliders"></span> Connection settings</button>
       <button id="exportChat" type="button" class="nav-action"><span data-icon="copy"></span> Export conversation</button>
     </div>
@@ -367,14 +368,14 @@ svg{display:block;flex-shrink:0}
     <section class="code-workspace" id="codeWorkspace" role="tabpanel" aria-labelledby="codeTab" aria-label="ATLAS code workspace" hidden>
       <div class="code-toolbar">
         <div class="code-toolbar-left"><span class="repo-glyph"><span data-icon="code"></span></span><div><strong>ATLAS-AI</strong><div class="code-sub">gulfcoastorganics-ai / main · GitHub Pages sources</div></div></div>
-        <div class="code-toolbar-right"><span class="code-readonly">READ ONLY</span><button class="code-open-github" id="toggleCodeAssistant" type="button" aria-controls="codeSidePane" aria-expanded="true"><span data-icon="message"></span> Assistant</button><a class="code-open-github" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">Open repository ↗</a></div>
+        <div class="code-toolbar-right"><span class="code-readonly">READ ONLY</span><a class="code-open-github" href="./autonomy.html" title="Open approval-gated Autonomous Development Mode"><span data-icon="code"></span> Autonomy</a><button class="code-open-github" id="toggleCodeAssistant" type="button" aria-controls="codeSidePane" aria-expanded="true"><span data-icon="message"></span> Assistant</button><a class="code-open-github" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">Open repository ↗</a></div>
       </div>
       <div class="code-layout">
         <aside class="file-explorer" id="fileExplorer" aria-label="Repository files">
           <div class="explorer-heading"><span>Explorer</span><span id="fileCount">10 files</span></div>
           <div class="file-filter"><span data-icon="search"></span><input id="fileFilter" type="search" autocomplete="off" placeholder="Find a file…" aria-label="Filter repository files" aria-controls="fileTree"></div>
           <div id="fileTree" class="explorer-tree"></div>
-          <div class="explorer-note">Public repository files shown here. Open a file to inspect its source; ATLAS cannot modify or execute it.</div>
+          <div class="explorer-note">Public repository files shown here. This viewer is read-only; use the separate Autonomy page to propose edits and explicitly approve a draft PR.</div>
         </aside>
         <section class="editor-panel" aria-label="Read-only source viewer">
           <div class="editor-tabs"><div class="editor-tab"><span data-icon="code"></span><span id="editorTabTitle">README.md</span></div><div class="editor-actions"><button class="icon-btn" id="refreshSource" type="button" title="Refresh source from GitHub Pages" aria-label="Refresh source"><span data-icon="refresh"></span></button><button class="icon-btn" id="wrapSource" type="button" aria-pressed="false" title="Toggle line wrapping" aria-label="Toggle source line wrapping"><span data-icon="wrap"></span></button><button class="icon-btn" id="copySource" type="button" title="Copy file contents" aria-label="Copy source"><span data-icon="copy"></span></button><a class="icon-btn" id="openSource" title="Open file on GitHub" aria-label="Open file on GitHub" target="_blank" rel="noopener noreferrer" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/README.md"><span data-icon="external"></span></a></div></div>

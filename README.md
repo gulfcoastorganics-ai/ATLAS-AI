@@ -22,6 +22,27 @@ Live frontend: https://gulfcoastorganics-ai.github.io/ATLAS-AI/
 
 The Chat/Code top bar and Connection settings now include a **Developer mode** switch (off by default, session-only). After deploying the updated root `worker.js` to Cloudflare, it applies a more direct, code-first response style with fewer unnecessary clarifying questions. The frontend sends a strict boolean `developerMode` on `/chat`; the `/health` response advertises `developerModeSupported: true` in the updated Worker. Until the Worker is deployed, the UI labels the option as **pending**. This is a preference toggle, **not** an unrestricted model or a bypass for safety requirements. It never grants GitHub writes, shell access, elevated permissions, or disables access keys, CORS, or rate limits.
 
+## Autonomous Development Mode (feature branch, NOT deployed)
+
+The dedicated `autonomy.html` page provides a **separate, off-by-default autonomous development workflow**. Ordinary `/chat` tools remain read-only.
+
+- **Plan only** (default): AI proposes up to five exact text edits to one existing repository file and returns a full before/after preview. No writes are allowed for this signed proposal.
+- **Review every change**: AI proposes the same bounded edit. After the operator reviews the full preview and explicitly approves it, the Worker creates a **new branch** and a **draft pull request**. It never modifies `main`, merges, deploys, or executes commands.
+- Each proposal is HMAC-signed with `ATLAS_AUTONOMY_SIGNING_KEY` (server secret), scoped to the original file SHA and exact edits, and expires after **30 minutes**. Applying after a source change is rejected. A deterministic branch prevents simple approval replay.
+- Existing-file edits only. Paths are restricted to `README.md`, `package.json`, and text files inside `docs/`, `src/`, `tests/`, or `scripts/`; maximum 15 KB file size. This is intentionally a scoped MVP, **not a general unattended coding agent**.
+- The implementation has no server-side task queue or sandbox. AI-generated edits and tests must be reviewed; GitHub Actions should be checked before merging.
+
+### Optional Cloudflare secrets required to activate
+
+The production Worker **must not be deployed as part of this feature review**. Once the change is approved and deployed deliberately, configure the following secrets via Cloudflare dashboard; never paste their values into chat or commit them:
+
+1. `ATLAS_AUTONOMY_SIGNING_KEY`: a strong, random encrypted string of at least 32 characters, used only for signed proposals.
+2. `ATLAS_GITHUB_WRITE_TOKEN`: a separate **fine-grained GitHub token** restricted to `gulfcoastorganics-ai/ATLAS-AI`, with repository **Contents: Read and write** and **Pull requests: Read and write**. The existing `GITHUB_TOKEN` remains read-only.
+
+This creates draft pull requests only after an explicit signed approval through `POST /autonomy/apply`; proposal generation uses `POST /autonomy/propose`. Both use existing `ATLAS_ACCESS_KEY` authentication, CORS, and rate limiting. No new public unauthenticated write route is added.
+
+**Security caveat:** Access-key security is a single-operator prototype, not multi-user identity. A user with the operator key can authorize proposals; do not expose that key. Consider a narrowly-scoped GitHub App and server-side audit logs before expanding autonomy beyond a single file.
+
 ## Implemented features
 
 1. **Hosted inference:** `env.AI.run("@cf/google/gemma-4-26b-a4b-it")` through a Workers AI binding.

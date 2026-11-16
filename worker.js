@@ -21,6 +21,8 @@
  *   - searchLocal()/loadIndex(): kept 0.2.1 optimizations (no Set per chunk, filesMap).
  *   - GITHUB_TOKEN auth preserved.
  */
+import { autonomyStatus, proposeAutonomousChange, approveAutonomousChange } from "./autonomy.js";
+
 const PROJECT = "gulfcoastorganics-ai/ATLAS-AI";
 const INDEX_URL = "https://gulfcoastorganics-ai.github.io/ATLAS-AI/reference-index.json";
 const MODEL = "@cf/google/gemma-4-26b-a4b-it";
@@ -281,8 +283,8 @@ export default {
     const path = new URL(request.url).pathname;
     if (request.method === "GET" && path === "/health")
       return replyJSON({ version:"0.2.2-devmode", developerModeSupported:true, aiConfigured:!!env.AI, accessKeyConfigured:!!env.ATLAS_ACCESS_KEY,
-        source:"external/CL4R1T4S", tools:TOOL_DEFS.map(t => t.name), writesEnabled:false },200,allowed);
-    if (request.method !== "POST" || !["/chat","/search"].includes(path))
+        source:"external/CL4R1T4S", tools:TOOL_DEFS.map(t => t.name), writesEnabled:false, autonomy:autonomyStatus(env) },200,allowed);
+    if (request.method !== "POST" || !["/chat","/search","/autonomy/propose","/autonomy/apply"].includes(path))
       return replyJSON({error:"Not found"},404,allowed);
     if (!env.ATLAS_ACCESS_KEY) return replyJSON({error:"Set ATLAS_ACCESS_KEY as a Cloudflare Worker secret"},503,allowed);
     if (!equalSecret(request.headers.get("X-Atlas-Access-Key") || "", env.ATLAS_ACCESS_KEY))
@@ -293,8 +295,19 @@ export default {
     }
     try {
       const raw = await request.text();
-      if (raw.length > 35000) return replyJSON({error:"Request too large"},413,allowed);
+      if (raw.length > (path.startsWith("/autonomy/") ? 45000 : 35000)) return replyJSON({error:"Request too large"},413,allowed);
       const data = JSON.parse(raw);
+      if (path === "/autonomy/propose" || path === "/autonomy/apply") {
+        try {
+          const output = path === "/autonomy/propose"
+            ? await proposeAutonomousChange(env, data)
+            : await approveAutonomousChange(env, data);
+          return replyJSON(output, 200, allowed);
+        } catch (error) {
+          const status = Number.isInteger(error.status) && error.status >= 400 && error.status < 600 ? error.status : 502;
+          return replyJSON({error: String(error.message || "Autonomous operation failed").slice(0, 500)}, status, allowed);
+        }
+      }
       if (path === "/search") {
         const query = String(data.query || "").slice(0,240);
         if (!query.trim()) return replyJSON({error:"Search query required"},400,allowed);
