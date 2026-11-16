@@ -1,4 +1,4 @@
-# ATLAS AI v0.2 — Cloud Agent Runtime
+# ATLAS Studio — AI Development Workspace (Worker v0.2.2)
 
 Live frontend: https://gulfcoastorganics-ai.github.io/ATLAS-AI/
 
@@ -12,7 +12,7 @@ Live frontend: https://gulfcoastorganics-ai.github.io/ATLAS-AI/
 | `reference-index.json` | Generated searchable chunk index of all supported text files |
 | `scripts/build_reference_index.py` | Builds the chunk index using Python standard library |
 | `worker.js` | Cloudflare agent runtime with hosted inference and tool dispatch |
-| `index.html` | GitHub Pages browser client; shows tool traces and archive search |
+| `index.html` | ATLAS Studio browser client: Chat and Code views, in-context assistant, archive search |
 | `tests/worker.test.mjs` | Mocked Worker tests |
 | `.github/workflows/index-reference.yml` | Regenerate the reference index when upstream changes |
 | `.github/workflows/deploy-worker.yml` | Manually deploy Worker via GitHub Actions |
@@ -25,7 +25,20 @@ Live frontend: https://gulfcoastorganics-ai.github.io/ATLAS-AI/
 3. **Agent loop:** Up to 3 model tool steps with 2 tool calls per step, plus a final answer. Tool activity is shown in the browser.
 4. **Functioning read-only tools:** `search_reference`, `read_reference`, `github_list`, `github_read`.
 5. **Access protection:** A server-side operator key, origin validation, request constraints, and optional Cloudflare rate limiting.
-6. **Automated validation:** Node.js mocked Worker tests, JavaScript syntax checks and reference-index checks via GitHub Actions.
+6. **Automated validation:** Node.js mocked Worker tests, frontend UI contract tests, JavaScript syntax checks and reference-index checks via GitHub Actions.
+
+## ATLAS Studio UI
+
+ATLAS Studio provides a conversation-first **Chat** view and a companion **Code** workspace, designed to work well on desktops and mobile screens. It has its own ATLAS identity while drawing on familiar AI-chat and developer-tool layout patterns.
+
+- **Chat:** read-only agent conversations, formatted replies, tool traces and session-only conversation switching. **Export conversation** creates a local Markdown file without the operator access key.
+- **Code:** curated public repository file explorer, filename filter, source refresh, line wrapping, jump-to-line, copy source, link to GitHub, and a contextual **Ask ATLAS** panel. The assistant's questions and replies appear in both Code and Chat.
+- **Activity:** verified tool names and statuses for the current conversation; the command palette supports browser-only read commands such as `help`, `ls`, `open README.md` and `health`. It is **not a shell**.
+- **Reference archive:** search indexed source excerpts; it can fall back to public GitHub Pages data when the authenticated Worker is unavailable.
+- **Shortcuts:** Ctrl/Cmd+1 = Chat, Ctrl/Cmd+2 = Code, Ctrl/Cmd+P = focus file finder. Chat and Code tabs also support left/right arrow navigation.
+- **Privacy:** sessions live in the current tab only; the operator access key remains in memory and is never saved to localStorage or exported. No repository writes, command execution or model streaming are enabled.
+
+The Code explorer intentionally lists a curated set of public files; it is not a full GitHub filesystem. Queries about the selected file use the production read-only agent tools. The Cloudflare Worker is deployed separately; publishing the frontend alone never changes it.
 
 ## Zero-install deployment
 
@@ -48,7 +61,7 @@ Repository **Settings → Pages → main / (root)**.
 After adding the GitHub repository encrypted secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` with appropriately scoped Cloudflare deploy permissions, run **Actions → Deploy ATLAS Worker to Cloudflare → Run workflow**. The `AI` and rate limiting bindings are read from `wrangler.toml`. Set `ATLAS_ACCESS_KEY` as an encrypted Cloudflare Worker secret separately. This does not require installing software locally.
 
 ### Check that it works
-- `GET /health` from ATLAS browser via **Check Worker** should report `0.2.0`, `aiConfigured=true`, `accessKeyConfigured=true`.
+- `GET /health` from ATLAS browser via **Check Worker** should report `0.2.2`, `aiConfigured=true`, `accessKeyConfigured=true`.
 - **Search archive** should find filenames and excerpts using `POST /search`.
 - Ask: **"Find the Agent tool description in the imported Claude Code Fable 5.2 archive and summarize how delegation works."**
 - Ask: **"Use github_list to inspect the root of the ATLAS-AI repository."**
@@ -57,7 +70,7 @@ After adding the GitHub repository encrypted secrets `CLOUDFLARE_API_TOKEN` and 
 ## Security and limitations
 
 - **Imported archive files are untrusted data.** ATLAS does not execute or adopt their instructions. Any license on the upstream repository does not necessarily grant redistribution rights to all third-party extracted content. Evaluate before commercial use.
-- GitHub read-only tools are pinned to the single public repository `gulfcoastorganics-ai/ATLAS-AI`. They do not use account tokens or write files, open issues or deploy.
+- GitHub read-only tools are pinned to the single public repository `gulfcoastorganics-ai/ATLAS-AI`. Production may use an optional encrypted, fine-grained `GITHUB_TOKEN` secret scoped to **Contents: Read-only** to avoid shared-IP unauthenticated rate limits. The tools cannot write files, open issues or deploy.
 - The browser frontend is public; the server-side operator key is essential to prevent anonymous paid/free inference misuse. A shared key is a **single-user prototype mechanism**, not a production identity or authorization system.
 - The Cloudflare rate limiting binding is approximate. Model usage may still reach provider quotas; add access control and billing limits before inviting other users.
 - Retrieval uses lightweight keyword scoring. It is not semantic embeddings, and some relevant excerpts may be missed.
