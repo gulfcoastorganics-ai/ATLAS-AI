@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#faf9f6">
+<meta name="description" content="ATLAS Studio — approval-gated autonomous development proposals">
+<title>ATLAS Studio — Autonomous Development</title>
+<style>
+:root{--bg:#faf9f6;--paper:#fffefa;--side:#f2f0eb;--text:#292722;--muted:#79766f;--line:#e6e1d9;--accent:#bb7256;--soft:#f6f4f0;--good:#4b8b67;--shadow:0 10px 40px #312a1c0b;font:14px/1.6 Inter,ui-sans-serif,system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed}a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #bb72566a;outline-offset:2px}
+.shell{min-height:100dvh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+nav{background:var(--side);border-right:1px solid var(--line);padding:28px 19px;display:flex;flex-direction:column;gap:8px}
+.brand{text-decoration:none;color:var(--text);font:26px Georgia,serif;letter-spacing:-1px;display:block;margin-bottom:5px}.brand-dot{color:var(--accent)}
+.brand-caption{font-size:10px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:36px}
+.navlink{display:block;text-decoration:none;color:var(--muted);padding:11px 12px;border-radius:10px;font-weight:600;font-size:12px}
+.navlink:hover,.navlink.active{background:var(--paper);color:var(--text)}
+.nav-note{font-size:11px;line-height:1.65;color:var(--muted);margin-top:auto;border-top:1px solid var(--line);padding-top:16px}
+main{min-width:0;padding:40px clamp(18px,5vw,72px) 64px}
+.container{width:100%;max-width:1100px;margin:0 auto}
+.eyebrow{font-size:10px;letter-spacing:2px;font-weight:750;color:var(--accent);text-transform:uppercase;margin-bottom:15px}
+h1{font:normal clamp(33px,4.5vw,54px)/1.15 Georgia,serif;letter-spacing:-1.6px;margin:0 0 15px}
+.hero p{color:var(--muted);font-size:14px;max-width:720px;margin:0 0 28px}
+.panel{border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:var(--shadow);padding:24px;margin:19px 0}
+.panel h2{font-size:16px;margin:0 0 7px}.panel-desc{color:var(--muted);font-size:12px;margin:0 0 19px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.switch{width:51px;height:29px;background:#bbb5aa;border:0;border-radius:99px;position:relative;flex:0 0 51px;transition:background .2s}
+.switch::before{content:"";position:absolute;left:4px;top:4px;height:21px;width:21px;background:white;border-radius:50%;box-shadow:0 2px 5px #0002;transition:transform .2s}
+.switch[aria-checked="true"]{background:var(--accent)}.switch[aria-checked="true"]::before{transform:translateX(22px)}
+.status{color:var(--muted);font-size:12px;padding:12px 14px;background:var(--soft);border-radius:10px;overflow-wrap:anywhere;margin-top:15px}
+.status.good{color:var(--good)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.field{min-width:0}.field.wide{grid-column:1/-1}
+label.field-label{display:block;font-size:12px;font-weight:700;margin:0 0 7px}
+.field input,.field select,.field textarea{width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);color:var(--text);outline:none}
+.field textarea{height:115px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
+.help{font-size:11px;color:var(--muted);margin:7px 0 0;line-height:1.6}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.actions{justify-content:space-between;margin-top:17px}
+button.primary{border:0;background:var(--accent);color:#fff;border-radius:10px;padding:11px 17px;font-weight:700;font-size:12px}
+button.primary:not(:disabled):hover{background:#9e563c}
+button.ghost{background:transparent;border:1px solid var(--line);padding:10px 14px;border-radius:10px;color:var(--text)}
+.mode-help{border-left:3px solid var(--accent);padding:7px 13px;margin:16px 0 0;color:var(--muted);font-size:12px;background:var(--soft)}
+.preview-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:14px;flex-wrap:wrap}
+.preview-head h2{margin-bottom:4px}
+.muted{color:var(--muted);font-size:12px}.code-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.code-box{min-width:0}.code-box strong{display:block;font-size:11px;margin-bottom:7px}
+pre{background:#272623;color:#ece9e3;padding:15px;border-radius:11px;max-height:330px;min-height:170px;overflow:auto;white-space:pre;font:11.5px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;margin:0}
+.review-check{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.7;margin-top:19px}
+.review-check input{accent-color:var(--accent);margin-top:4px}
+.result-link{font-size:13px;font-weight:700;margin-top:12px;display:inline-block}
+.badge{font-size:10px;border:1px solid var(--line);padding:5px 9px;border-radius:99px;color:var(--muted);background:var(--soft)}
+.warning{margin-top:21px;padding:13px;background:var(--soft);border-radius:10px;color:var(--muted);font-size:11px;line-height:1.7}
+[hidden]{display:none!important}
+@media(max-width:850px){.shell{grid-template-columns:1fr}nav{display:flex;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:13px 18px;gap:6px;border-right:0;border-bottom:1px solid var(--line)}.brand{font-size:23px}.brand-caption,.nav-note{display:none}.navlink{padding:7px 9px}main{padding:28px 18px 45px}}
+@media(max-width:610px){.form-grid,.code-grid{grid-template-columns:1fr}.field.wide{grid-column:auto}.panel{padding:17px;border-radius:14px}.hero p{font-size:13px}pre{max-height:230px}nav{justify-content:flex-start;gap:3px}.brand{width:100%}}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav aria-label="ATLAS navigation"><a class="brand" href="./">ATLAS<span class="brand-dot">✦</span></a><div class="brand-caption">Development Studio</div><a class="navlink" href="./">Chat &amp; Code</a><a class="navlink active" href="./autonomy.html" aria-current="page">Autonomous development</a><a class="navlink" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><div class="nav-note">Proposals are read-only until you explicitly approve an exact change. Draft pull requests are never merged or deployed automatically.</div></nav>
+<main><div class="container">
+<header class="hero"><div class="eyebrow">ATLAS Studio / Autonomous workflows</div><h1>Build with control.</h1><p>Turn a development request into a scoped, reviewable code proposal. ATLAS can prepare an exact edit for one existing file and, when separately authorized, open a draft pull request on a new branch. You stay in control of approval and merging.</p></header>
+<section class="panel" aria-labelledby="enableHeading">
+ <div class="toggle-row"><div><h2 id="enableHeading">Autonomous Development Mode</h2><p class="panel-desc" style="margin-bottom:0">Off by default. Enabling unlocks planning and review controls; it grants no repository permissions by itself.</p></div><button class="switch" id="autonomyToggle" type="button" role="switch" aria-checked="false" aria-label="Enable autonomous development"></button></div>
+ <div class="status" id="availability" role="status">Mode is off. Configure your existing ATLAS Worker before creating proposals.</div>
+</section>
+<section class="panel" aria-labelledby="settingsHeading">
+<h2 id="settingsHeading">Workspace connection</h2><p class="panel-desc">Your operator key stays in this tab only. The dedicated GitHub write credential, if enabled, remains an encrypted Worker secret.</p>
+<div class="form-grid">
+ <div class="field"><label class="field-label" for="endpoint">ATLAS Worker endpoint</label><input id="endpoint" type="url" required autocomplete="url" value="https://atlas-agent-api.gulfcoastorganics.workers.dev"></div>
+ <div class="field"><label class="field-label" for="access">Operator access key</label><input id="access" type="password" autocomplete="off" spellcheck="false" placeholder="Your ATLAS_ACCESS_KEY" aria-describedby="keyHelp"><p class="help" id="keyHelp">Do not enter your GitHub PAT here. This is the existing ATLAS access key.</p></div>
+</div><div class="row actions"><span class="muted" id="connectionText">Not checked</span><button type="button" class="ghost" id="checkWorker">Check Worker</button></div>
+</section>
+<section class="panel" aria-labelledby="taskHeading">
+<h2 id="taskHeading">Create a development proposal</h2><p class="panel-desc">Existing text files only (up to 15 KB). Large files, protected configuration, and third-party archive files are outside this initial workflow.</p>
+<form id="proposalForm">
+<div class="form-grid">
+ <div class="field"><label class="field-label" for="targetPath">File to improve</label><input id="targetPath" required maxlength="220" spellcheck="false" value="README.md" placeholder="README.md or tests/worker.test.mjs"><p class="help">Allowed: README.md, package.json, docs/, src/, tests/, and scripts/.</p></div>
+ <div class="field"><label class="field-label" for="policy">Approval requirements</label><select id="policy"><option value="plan">Plan only — no GitHub writes</option><option value="review">Review each change — draft PR on approval</option></select><p class="help" id="policyHelp">ATLAS can propose edits, but cannot write to GitHub.</p></div>
+ <div class="field wide"><label class="field-label" for="task">Describe the change</label><textarea id="task" minlength="8" maxlength="900" required placeholder="For example: Add a clearly organized quick-start guide to README.md with setup and troubleshooting sections."></textarea></div>
+</div><div class="row actions"><span class="badge">One file per proposal · 30-minute approval window</span><button class="primary" id="generate" type="submit" disabled>Generate proposal</button></div>
+</form><div class="status" id="taskStatus" role="status">Enable Autonomous Development Mode to begin.</div>
+</section>
+<section class="panel" id="review" hidden aria-labelledby="reviewHeading">
+<div class="preview-head"><div><div class="eyebrow">Review before applying</div><h2 id="reviewHeading">Proposed changes</h2><div class="muted" id="summary"></div></div><span class="badge" id="expiry"></span></div>
+<div class="code-grid"><div class="code-box"><strong>Current file</strong><pre id="before"></pre></div><div class="code-box"><strong>Proposed file</strong><pre id="after"></pre></div></div>
+<label class="review-check"><input id="approved" type="checkbox" disabled> I have reviewed the proposed source change. I authorize ATLAS to create a new branch and draft pull request for this file only. I do not authorize a merge or deployment.</label>
+<div class="row actions"><span class="muted" id="applyHint">Review is required to create a draft PR.</span><button class="primary" id="apply" type="button" disabled>Approve &amp; create draft PR</button></div>
+<div id="result" aria-live="polite"></div>
+</section>
+<div class="warning">Autonomy does not disable model-provider safeguards, access controls, auditability, or GitHub permissions. There is no direct push to main, automatic merge, shell execution, or deployment. GitHub Actions checks must still be reviewed before any merge.</div>
+</div></main></div>
+<script>
+const $=id=>document.getElementById(id);
+let enabled=false, proposal=null, availability=null;
+const DEFAULT='https://atlas-agent-api.gulfcoastorganics.workers.dev';
+try{$('endpoint').value=localStorage.getItem('atlas-worker-url')||DEFAULT;}catch{}
+$('endpoint').addEventListener('change',()=>{try{localStorage.setItem('atlas-worker-url',$('endpoint').value.trim());}catch{}});
+const params=new URLSearchParams(location.search);
+if(params.has('file'))$('targetPath').value=params.get('file').slice(0,220);
+function workerUrl(){try{const u=new URL($('endpoint').value.trim());if(u.protocol!=='https:')throw Error();return u.origin;}catch{throw Error('Enter a valid HTTPS Worker endpoint.');}}
+async function api(path,body){
+ const response=await fetch(workerUrl()+path,{method:'POST',headers:{'Content-Type':'application/json','X-Atlas-Access-Key':$('access').value},body:JSON.stringify(body)});
+ let data;try{data=await response.json();}catch{throw Error('ATLAS returned an invalid JSON response.');}
+ if(!response.ok)throw Error(String(data.error||'HTTP '+response.status));return data;
+}
+function status(message){$('taskStatus').textContent=message;}
+function reset(){proposal=null;$('review').hidden=true;$('approved').checked=false;$('approved').disabled=true;$('apply').disabled=true;$('result').textContent='';}
+function updatePolicy(){
+ $('policyHelp').textContent=$('policy').value==='plan'
+ ?'No changes are written to GitHub. You can inspect the exact proposed file.'
+ :'Every file change requires explicit review and authorization. Only a draft PR can be created.';
+ reset();
+}
+$('policy').addEventListener('change',updatePolicy);
+$('targetPath').addEventListener('input',reset);
+$('task').addEventListener('input',reset);
+function syncEnabled(){const b=$('autonomyToggle');b.setAttribute('aria-checked',String(enabled));b.setAttribute('aria-label',enabled?'Disable autonomous development':'Enable autonomous development');$('generate').disabled=!enabled;
+ $('availability').textContent=enabled?'Mode enabled for this tab. A signed proposal is required before any optional draft PR.':'Mode is off. No proposal or GitHub write will run.';
+ if(!enabled)reset();
+ status(enabled?'Describe a focused task to generate a preview.':'Enable Autonomous Development Mode to begin.');
+}
+$('autonomyToggle').onclick=()=>{enabled=!enabled;syncEnabled();};
+async function checkWorker(){
+ $('connectionText').textContent='Checking Worker…';
+ try{const response=await fetch(workerUrl()+'/health');if(!response.ok)throw Error('HTTP '+response.status);
+ const data=await response.json();availability=data.autonomy||null;
+ if(!availability?.supported){$('connectionText').textContent='Worker not upgraded — autonomy API is unavailable.';return;}
+ $('connectionText').textContent='Worker '+data.version+' · proposal '+(availability.proposalReady?'ready':'not configured')+' · draft PR '+(availability.draftPrReady?'available':'not configured');
+ }catch(e){$('connectionText').textContent='Connection failed: '+e.message;}
+}
+$('checkWorker').onclick=checkWorker;
+$('proposalForm').onsubmit=async event=>{
+ event.preventDefault();if(!enabled)return;
+ if(!$('access').value.trim()){status('Enter your ATLAS operator access key first.');$('access').focus();return;}
+ reset();$('generate').disabled=true;status('Reading the file and asking ATLAS to prepare exact edits…');
+ try{
+  const data=await api('/autonomy/propose',{path:$('targetPath').value.trim(),task:$('task').value.trim(),policy:$('policy').value});
+  proposal=data;$('reviewHeading').textContent=data.proposal.title;
+  $('summary').textContent=data.proposal.summary+' · '+data.proposal.path;
+  $('expiry').textContent='Expires in 30 minutes';$('before').textContent=data.before;$('after').textContent=data.after;
+  $('review').hidden=false;$('approved').disabled=!data.canApprove;
+  $('applyHint').textContent=data.proposal.policy==='plan'?'Plan-only policy: approval is disabled.':
+   data.canApprove?'Review both versions, then check the approval box.':'The Worker is missing its separate GitHub write secret.';
+  status('Proposal prepared. No repository writes have occurred.');
+ }catch(e){status('Proposal failed: '+e.message);}finally{$('generate').disabled=!enabled;}
+};
+$('approved').onchange=()=>{$('apply').disabled=!proposal?.canApprove||!$('approved').checked;};
+$('apply').onclick=async()=>{
+ if(!enabled||!proposal?.canApprove||!$('approved').checked)return;
+ if(!confirm('Create a new GitHub branch and DRAFT pull request for the reviewed edits? This will not merge or deploy.'))return;
+ $('apply').disabled=true;status('Creating the approved draft pull request…');
+ try{
+  const data=await api('/autonomy/apply',{proposal:proposal.proposal,signature:proposal.signature});
+  const out=$('result');out.textContent='';
+  const link=document.createElement('a');link.className='result-link';link.href=data.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Open draft pull request #'+data.number;out.append(link);
+  const detail=document.createElement('div');detail.className='muted';detail.textContent='Branch: '+data.branch+' · main unchanged · no deployment';out.append(detail);
+  $('approved').disabled=true;proposal=null;status('Draft PR created. Review GitHub checks before merging.');
+ }catch(e){status('Approval failed: '+e.message);$('apply').disabled=false;}
+};
+syncEnabled();updatePolicy();
+</script>
+</body></html>
