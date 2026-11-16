@@ -16,7 +16,7 @@ for (const id of [
   'chatTab', 'codeTab', 'fileFilter', 'fileTree', 'codeWorkspace',
   'codeAssistantView', 'codeActivityView', 'codeQuestion', 'codeAskForm',
   'toggleCodeAssistant', 'refreshSource', 'wrapSource', 'jumpLine',
-  'jumpButton', 'exportChat', 'settingsDialog', 'inspector', 'thread'
+  'jumpButton', 'exportChat', 'settingsDialog', 'inspector', 'thread', 'developerToggle', 'developerModeSetting', 'developerSupportHint'
 ]) assert.ok(ids.includes(id), `Missing essential ATLAS Studio control: #${id}`);
 
 assert.match(html, /aria-controls="codeWorkspace"/, 'Code tab controls workspace');
@@ -28,3 +28,5 @@ assert.match(html, /ATLAS can make mistakes/, 'Include a model output reliabilit
 assert.ok(!/localStorage\.setItem\(\s*['"](?:atlas-access|access|ATLAS_ACCESS_KEY)/.test(html),
   'Do not persist access credentials');
 console.log(`ATLAS Studio frontend checks passed (${ids.length} unique IDs)`);
+
+assert.match(html, /developerMode\s*:\s*developerMode|messages:s\.history\.slice\(-12\),developerMode/, 'Dev mode must be sent to Worker on chat requests');
