@@ -160,6 +160,18 @@ svg{display:block;flex-shrink:0}
 .status-panel{padding:12px 14px;background:var(--soft);border-radius:10px;display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;line-height:1.4;margin-bottom:16px}
 .dialog-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:5px}
 .settings-link{font-size:12px;text-decoration:none}
+.dev-toggle{border:1px solid var(--line);background:var(--soft);color:var(--muted);border-radius:99px;display:inline-flex;align-items:center;gap:9px;min-height:34px;padding:5px 9px 5px 12px;font-size:11px;font-weight:650;white-space:nowrap;transition:border-color .15s,background .15s}
+.dev-toggle:hover{border-color:var(--accent);color:var(--text)}
+.dev-toggle[aria-checked="true"]{background:var(--accent-soft);color:var(--accent-dark);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.dev-track{width:29px;height:17px;flex:0 0 29px;border-radius:100px;background:var(--hint);padding:2px;transition:background .15s}
+.dev-track::before{content:"";display:block;width:13px;height:13px;background:white;border-radius:50%;box-shadow:0 1px 3px #0002;transition:transform .15s}
+.dev-toggle[aria-checked="true"] .dev-track{background:var(--accent)}
+.dev-toggle[aria-checked="true"] .dev-track::before{transform:translateX(12px)}
+.dev-setting{border:1px solid var(--line);border-radius:12px;background:var(--soft);padding:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.dev-setting strong{font-size:13px;color:var(--text-strong)}
+.dev-setting p{font-size:11px;color:var(--muted);line-height:1.6;margin:6px 0 0}
+.dev-support{font-size:11px;line-height:1.55;color:var(--muted);margin:-2px 0 18px}
+@media(max-width:610px){.dev-toggle .dev-label{display:none}.dev-toggle{padding:5px 7px}.top-right{gap:1px}}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--text-strong);color:var(--bg);box-shadow:var(--shadow);padding:10px 15px;border-radius:10px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;z-index:70;max-width:min(90vw,500px)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 [hidden]{display:none!important}
@@ -347,6 +359,7 @@ svg{display:block;flex-shrink:0}
       <div class="top-right">
         <div class="mode-switch" role="tablist" aria-label="Workspace view"><button id="chatTab" class="mode-tab active" type="button" role="tab" aria-selected="true" aria-controls="chatScroll" tabindex="0"><span data-icon="message"></span><span>Chat</span></button><button id="codeTab" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="codeWorkspace" tabindex="-1"><span data-icon="code"></span><span>Code</span></button></div>
         <button class="icon-btn" id="topSearch" type="button" title="Search reference archive" aria-label="Search reference archive"><span data-icon="search"></span></button>
+        <button class="dev-toggle" id="developerToggle" type="button" role="switch" aria-checked="false" aria-label="Developer mode off" title="Switch direct, code-first responses on or off"><span class="dev-label">Dev mode</span><span class="dev-track" aria-hidden="true"></span></button>
         <button class="icon-btn" id="themeToggle" type="button" title="Toggle light and dark mode" aria-label="Toggle appearance"><span data-icon="moon" id="themeIcon"></span></button>
         <button class="icon-btn" id="topNewChat" type="button" title="New conversation" aria-label="New conversation"><span data-icon="square-pen"></span></button>
       </div>
@@ -433,6 +446,8 @@ svg{display:block;flex-shrink:0}
     <div class="field"><label for="endpoint">Cloudflare Worker URL</label><input id="endpoint" type="url" autocomplete="url" placeholder="https://atlas-agent-api.example.workers.dev"><p class="field-help">The Worker endpoint is remembered on this device. It can be changed anytime.</p></div>
     <div class="field"><label for="access">ATLAS access key</label><input id="access" type="password" autocomplete="off" spellcheck="false" placeholder="Enter your ATLAS_ACCESS_KEY"><p class="field-help">Your access key stays in this tab's memory and is never stored in localStorage or included in shared URLs.</p></div>
     <div class="field"><label for="mode">Runtime</label><select id="mode"><option value="live">Live Cloudflare Workers AI</option><option value="demo">UI demonstration only</option></select></div>
+    <div class="dev-setting"><div><strong>Developer mode</strong><p>Direct, code-first answers with fewer routine clarifications. Model safeguards, ATLAS authorization, rate limiting, and read-only GitHub access remain enabled.</p></div><button class="dev-toggle" id="developerModeSetting" type="button" role="switch" aria-checked="false" aria-label="Developer mode off" title="Toggle Developer mode"><span class="dev-track" aria-hidden="true"></span></button></div>
+    <p class="dev-support" id="developerSupportHint" role="status">Requires a compatible Worker update to affect AI responses.</p>
     <div class="status-panel"><span class="status-dot" id="settingsDot"></span><span id="status">Connection not checked</span></div>
     <div class="dialog-footer"><a class="settings-link" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">View source code ↗</a><button id="connect" class="action-btn" type="button">Check Worker</button></div>
   </div>
@@ -470,6 +485,24 @@ function setIcons(root=document){root.querySelectorAll('[data-icon]').forEach(el
 setIcons();
 const endpoint=$('endpoint'),access=$('access'),mode=$('mode'),status=$('status'),thread=$('thread'),message=$('message'),send=$('send');
 const DEFAULT_WORKER='https://atlas-agent-api.gulfcoastorganics.workers.dev';
+let developerMode = false;
+let developerModeSupported = false;
+function renderDeveloperMode(){
+  for(const id of ['developerToggle','developerModeSetting']){
+    const button=$(id);
+    button.setAttribute('aria-checked', String(developerMode));
+    button.setAttribute('aria-label', 'Developer mode '+(developerMode?'on':'off'));
+  }
+  document.documentElement.dataset.developerMode = developerMode?'on':'off';
+  $('developerSupportHint').textContent=developerModeSupported
+    ?(developerMode?'Active: direct, code-first responses. Tool permissions and safety are unchanged.':'Available: enable for more direct technical responses.')
+    :'Requires a compatible Worker deployment. Your current Worker may ignore this setting.';
+  $('runtimeLabel').textContent=mode.value==='demo'?'UI demo':(developerMode?(developerModeSupported?'Dev mode':'Dev mode pending'):'Live agent');
+}
+function toggleDeveloperMode(){developerMode=!developerMode;renderDeveloperMode();toast(developerMode?(developerModeSupported?'Developer mode enabled':'Dev mode pending Worker update'):'Developer mode disabled');}
+$('developerToggle').addEventListener('click',toggleDeveloperMode);
+$('developerModeSetting').addEventListener('click',toggleDeveloperMode);
+renderDeveloperMode();
 try{endpoint.value=localStorage.getItem('atlas-worker-url')||DEFAULT_WORKER;}catch{endpoint.value=DEFAULT_WORKER;}
 endpoint.addEventListener('change',()=>{try{localStorage.setItem('atlas-worker-url',endpoint.value.trim());}catch{}});
 const storedTheme=(()=>{try{return localStorage.getItem('atlas-theme');}catch{return null;}})();
@@ -495,8 +528,8 @@ async function copyText(s){try{await navigator.clipboard.writeText(s);toast('Cop
 function workerUrl(){const v=endpoint.value.trim().replace(/\/$/,'');try{const url=new URL(v);if(url.protocol!=='https:')throw Error();return url.origin;}catch{throw Error('Enter a valid HTTPS Cloudflare Worker URL in settings.');}}
 async function api(path,data){const r=await fetch(workerUrl()+path,{method:'POST',headers:{'Content-Type':'application/json','X-Atlas-Access-Key':access.value},body:JSON.stringify(data)});let result;try{result=await r.json();}catch{throw Error('ATLAS returned an invalid JSON response.');}if(!r.ok)throw Error(result.error||('HTTP '+r.status));return result;}
 function statusUpdate(txt,state=''){status.textContent=txt;$('sideStatus').textContent=txt;[$('sideDot'),$('settingsDot')].forEach(el=>{el.className='status-dot'+(state==='ok'?' ok':state==='bad'?' bad':'');});}
-$('connect').onclick=async()=>{statusUpdate('Checking Worker…');try{const r=await fetch(workerUrl()+'/health');if(!r.ok)throw Error('Worker returned HTTP '+r.status);const j=await r.json();if(!j.aiConfigured||!j.accessKeyConfigured)throw Error('AI or access key binding not configured');statusUpdate('Worker v'+j.version+' · AI ready'+(access.value?' · key entered':' · enter access key'),'ok');toast('Worker is responding');}catch(err){statusUpdate('Connection failed: '+err.message,'bad');}};
-mode.addEventListener('change',()=>{$('runtimeLabel').textContent=mode.value==='live'?'Live agent':'UI demo';});
+$('connect').onclick=async()=>{statusUpdate('Checking Worker…');try{const r=await fetch(workerUrl()+'/health');if(!r.ok)throw Error('Worker returned HTTP '+r.status);const j=await r.json();developerModeSupported=j.developerModeSupported===true;renderDeveloperMode();if(!j.aiConfigured||!j.accessKeyConfigured)throw Error('AI or access key binding not configured');statusUpdate('Worker v'+j.version+' · AI ready'+(access.value?' · key entered':' · enter access key'),'ok');toast('Worker is responding');}catch(err){statusUpdate('Connection failed: '+err.message,'bad');}};
+mode.addEventListener('change',renderDeveloperMode);
 function openSettings(){closeSidebar();const d=$('settingsDialog');if(!d.open)d.showModal();setTimeout(()=>access.focus(),60);}
 function closeSettings(){if($('settingsDialog').open)$('settingsDialog').close();}
 $('sidebarSettings').onclick=openSettings;$('footerSettings').onclick=openSettings;$('closeSettings').onclick=closeSettings;
@@ -536,7 +569,7 @@ async function submitAtlasMessage(displayText, filePath=null){
   try{
     const response=mode.value==='demo'
       ?{reply:'This is a visual demonstration. Select Live Workers AI in settings and supply your access key to run the actual read-only GitHub tools.',trace:[]}
-      :await api('/chat',{messages:s.history.slice(-12)});
+      :await api('/chat',{messages:s.history.slice(-12),developerMode});
     const content=response.reply||'No answer returned.';
     s.history.push({role:'assistant',content});
     s.transcript.push({role:'assistant',text:content,trace:response.trace||[]});
