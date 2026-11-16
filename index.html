@@ -2,144 +2,340 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#08111e">
-<title>ATLAS AI — Agent Runtime</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#faf9f6">
+<meta name="description" content="ATLAS AI — a focused workspace for thoughtful software development, repository research, and source exploration.">
+<title>ATLAS — AI Development Workspace</title>
 <style>
-:root{color-scheme:dark;--bg:#08111e;--surface:#111d2f;--surface2:#15263e;--line:#2b4260;--text:#eff6ff;--muted:#95abc5;--accent:#69c3ff;--glow:#3d8dea;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+:root {
+  color-scheme:light;
+  --bg:#faf9f6;--sidebar:#f2f0eb;--paper:#fffefa;--panel:#ffffff;--soft:#f6f4f0;
+  --text:#292722;--text-strong:#211e1b;--muted:#807d75;--hint:#a6a198;--line:#e7e4de;
+  --accent:#bb7256;--accent-dark:#9d573f;--accent-soft:#f5e9e1;--hover:#eae6df;
+  --user:#eeebe5;--shadow:0 4px 24px rgba(62,51,39,.055),0 1px 3px rgba(62,51,39,.035);
+  --radius:14px;--sidebar-width:260px;--inspector-width:355px;
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;
+}
+html[data-theme="dark"] {
+  color-scheme:dark;
+  --bg:#1d1c1a;--sidebar:#161615;--paper:#292724;--panel:#242320;--soft:#292824;
+  --text:#ece9e2;--text-strong:#f8f5ed;--muted:#aaa59b;--hint:#858178;--line:#383630;
+  --accent:#d28f72;--accent-dark:#ebae92;--accent-soft:#392922;--hover:#302e2a;
+  --user:#34322e;--shadow:0 10px 32px rgba(0,0,0,.18);
+}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse 90% 60% at 50% -18%,#183a63 0,transparent 70%),var(--bg);color:var(--text);min-height:100vh}
-header{padding:20px max(20px,calc((100vw - 1280px)/2));border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px}
-h1{margin:0;font-size:21px;letter-spacing:.16em;font-weight:780}h1 span{color:var(--accent)}
-header small{color:var(--muted);font-size:11px;letter-spacing:.14em}
-.pill{border:1px solid var(--line);border-radius:25px;color:var(--accent);padding:7px 11px;font-size:12px}
-.layout{max-width:1300px;margin:auto;padding:20px;display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:19px;min-height:calc(100vh - 80px)}
-aside,.main{background:rgba(16,27,44,.89);border:1px solid var(--line);border-radius:17px;overflow:hidden}
-aside{padding:20px;align-self:start}aside h2{font-size:13px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin:0 0 15px}
-.field{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
-label{font-size:12px;color:#b3c6dc;font-weight:700}
-input,select,textarea{font:inherit;background:#091725;color:var(--text);border:1px solid #35516e;border-radius:9px;padding:12px;width:100%;outline:none}
-input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px #69c3ff26}
-textarea{resize:vertical;min-height:70px;max-height:220px}
-button{font:inherit;border-radius:9px;background:#2369b9;border:1px solid #4b91e0;color:white;font-weight:700;padding:11px 14px;cursor:pointer}
-button:hover{background:#307ccf}button:disabled{opacity:.55;cursor:wait}
-button.secondary{background:transparent;border-color:#365171;color:#d0e1f8}
-.small{font-size:12px;padding:9px 10px}
-.helper{font-size:12px;color:var(--muted);line-height:1.6}
-hr{border:0;border-top:1px solid var(--line);margin:19px 0}
-.status{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
-.dot{background:#7b90aa;width:7px;height:7px;flex-shrink:0;border-radius:50%}
-.dot.ok{background:#4de5aa}.dot.err{background:#f6af6c}
-.main{display:flex;flex-direction:column;min-height:660px}
-.main-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
-.main-head strong{font-size:15px}.main-head small{display:block;color:var(--muted);margin-top:3px;font-size:12px}
-.main-head button{flex-shrink:0}
-#chat{flex:1;display:flex;flex-direction:column;gap:18px;padding:24px 20px;min-height:370px;overflow-y:auto}
-.bubble{max-width:91%;border-radius:14px;padding:14px 17px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
-.bubble.assistant{background:#1a2a43;border:1px solid #344c6a;align-self:flex-start}
-.bubble.user{background:#214c87;align-self:flex-end}
-.bubble.error{border-color:#a05e4f;color:#ffd8c5}
-.trace{font-size:12px;color:#b5cce7;padding:9px 13px;background:#0c1a2b;border:1px solid #2b4260;border-radius:10px;align-self:flex-start;max-width:95%;line-height:1.5}
-.trace summary{cursor:pointer;color:var(--accent);font-weight:700}
-.trace ul{padding-left:20px;margin-bottom:4px}
-.composer{display:flex;align-items:flex-end;gap:10px;padding:16px 20px;border-top:1px solid var(--line)}
-.composer textarea{flex:1;min-width:0;min-height:56px}
-.note{padding:0 20px 16px;font-size:11px;color:var(--muted)}
-#results{display:flex;flex-direction:column;gap:8px;margin-top:10px;max-height:280px;overflow-y:auto}
-.result{background:#11233a;padding:10px;border:1px solid #2b4260;border-radius:9px;font-size:11px;overflow-wrap:anywhere}
-.result a{color:#b8dbff;text-decoration:none;font-weight:700}
-.result p{font-size:11px;margin:6px 0 0;color:#a6b8ce}
-.footlink{color:#95caff;text-decoration:none;font-size:12px}
-@media(max-width:790px){.layout{grid-template-columns:1fr;gap:12px;padding:10px}.main{min-height:65vh}aside{padding:15px}header{padding:16px}.main-head,#chat,.composer{padding:15px}.bubble{max-width:97%}header h1{font-size:18px}}
+html,body{height:100%;margin:0}
+body{color:var(--text);background:var(--bg);font-size:14px;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.5}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 48%,transparent);outline-offset:2px}
+a{color:var(--accent-dark)}
+svg{display:block;flex-shrink:0}
+.icon{width:18px;height:18px;display:inline-block;vertical-align:middle;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.icon.sm{width:16px;height:16px}.icon.lg{width:21px;height:21px}
+.app{height:100dvh;min-height:500px;display:flex;overflow:hidden}
+.sidebar{width:var(--sidebar-width);flex:0 0 var(--sidebar-width);background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:30;min-height:0}
+.sidebar-top{display:flex;align-items:center;justify-content:space-between;padding:24px 17px 22px 20px;gap:8px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text-strong);text-decoration:none;min-width:0}
+.brandmark{width:30px;height:30px;border:2px solid var(--accent);border-radius:11px;display:grid;place-items:center;color:var(--accent);transform:rotate(-8deg)}
+.brandmark svg{transform:rotate(8deg)}
+.brand-name{font-family:Georgia,"Iowan Old Style",serif;font-size:25px;letter-spacing:-1.15px;line-height:1}
+.brand-sub{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:5px;font-weight:700}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;border:0;background:transparent;color:var(--muted);width:36px;height:36px;border-radius:10px;padding:0;transition:background .16s,color .16s}
+.icon-btn:hover{background:var(--hover);color:var(--text)}
+.sidebar-actions{padding:0 13px;display:grid;gap:4px}
+.nav-action,.session-btn{display:flex;align-items:center;gap:12px;border:0;background:transparent;color:var(--text);width:100%;min-height:42px;border-radius:10px;text-align:left;padding:10px 11px;font-size:13px;font-weight:560;transition:background .14s}
+.nav-action:hover,.session-btn:hover{background:var(--hover)}
+.nav-action.primary{background:var(--paper);box-shadow:0 1px 3px rgba(30,25,15,.04);font-weight:650}
+.nav-action.primary:hover{background:var(--panel)}
+.nav-action .icon{color:var(--muted)}
+.nav-action.primary .icon{color:var(--accent)}
+.section-label{color:var(--hint);font-size:11px;font-weight:690;padding:27px 23px 9px;letter-spacing:.04em}
+.sessions{overflow:auto;min-height:0;flex:1;padding:0 13px}
+.session-btn{font-size:12.5px;min-height:38px;gap:10px;font-weight:470;white-space:nowrap;overflow:hidden}
+.session-btn span{overflow:hidden;text-overflow:ellipsis}
+.session-btn .icon{width:15px;height:15px;color:var(--muted)}
+.session-btn.active{background:var(--hover);font-weight:640}
+.empty-sessions{color:var(--hint);font-size:12px;line-height:1.55;padding:9px 12px}
+.sidebar-footer{border-top:1px solid var(--line);padding:13px}
+.status-row{display:flex;align-items:center;gap:9px;padding:10px 11px;margin-bottom:5px;color:var(--muted);font-size:12px}
+.status-dot{height:8px;width:8px;border-radius:50%;background:#afa69c;display:inline-block;flex-shrink:0}
+.status-dot.ok{background:#559b76}.status-dot.bad{background:#d07b62}
+.footer-link{font-size:12px}
+.workspace{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg);position:relative}
+.topbar{height:68px;flex:0 0 68px;display:flex;align-items:center;justify-content:space-between;padding:0 29px;gap:12px}
+.top-left,.top-right{display:flex;align-items:center;gap:10px;min-width:0}
+.top-title{font-weight:650;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:380px}
+.top-chevron{color:var(--hint)}
+.top-version{font-size:11px;border:1px solid var(--line);background:var(--soft);border-radius:99px;padding:5px 9px;color:var(--muted);white-space:nowrap}
+.mobile-menu{display:none}
+.content-scroll{overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.welcome{max-width:790px;width:100%;margin:0 auto;padding:clamp(60px,12vh,150px) 30px 30px}
+.hero-overline{display:flex;align-items:center;gap:11px;color:var(--muted);font-weight:650;letter-spacing:.11em;text-transform:uppercase;font-size:10px;margin-bottom:26px}
+.hero-mark{width:31px;height:31px;color:var(--accent)}
+.welcome h1{font-family:Georgia,"Iowan Old Style", "Times New Roman",serif;color:var(--text-strong);font-size:clamp(38px,5.2vw,58px);font-weight:400;letter-spacing:-2.7px;line-height:1.16;margin:0 0 18px}
+.welcome h1 em{font-weight:400;font-style:normal;color:var(--accent)}
+.welcome-description{color:var(--muted);font-size:15px;line-height:1.7;max-width:550px;margin:0 0 39px}
+.quick-label{font-size:11px;color:var(--muted);font-weight:650;letter-spacing:.04em;margin-bottom:13px}
+.prompts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.prompt-card{display:flex;align-items:flex-start;gap:13px;border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:16px;min-height:88px;text-align:left;color:var(--text);transition:transform .15s,box-shadow .15s,border-color .15s}
+.prompt-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.prompt-card .icon{color:var(--accent);margin-top:1px}
+.prompt-card strong{display:block;font-size:13px;margin-bottom:6px;font-weight:680}
+.prompt-card small{display:block;font-size:11.5px;color:var(--muted);line-height:1.5}
+.thread{width:100%;max-width:826px;padding:22px 30px 18px;margin:auto;display:flex;flex-direction:column;gap:29px}
+.message{display:flex;gap:14px;width:100%;min-width:0;animation:fade .2s ease-out}
+@keyframes fade{from{opacity:.1;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.message.user{justify-content:flex-end}
+.message.user .message-content{background:var(--user);max-width:min(88%,650px);border-radius:19px;padding:13px 18px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.message.assistant .message-content{flex:1;min-width:0;max-width:100%}
+.avatar{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 30px;margin-top:1px;background:var(--accent-soft);color:var(--accent)}
+.avatar .icon{width:20px;height:20px}
+.sender{font-weight:700;color:var(--text-strong);font-size:12px;margin:2px 0 12px}
+.prose{font-size:14px;line-height:1.83;color:var(--text);overflow-wrap:anywhere}
+.prose p{margin:0 0 13px}.prose p:last-child{margin-bottom:0}
+.prose h3,.prose h4{color:var(--text-strong);font-size:17px;letter-spacing:-.35px;margin:21px 0 9px;font-weight:680}
+.prose h4{font-size:15px}
+.prose ul,.prose ol{padding-left:23px;margin:7px 0 15px}.prose li{padding-left:2px;margin:4px 0}
+.prose pre{overflow:auto;border:1px solid var(--line);border-radius:11px;background:var(--soft);font:12px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;padding:15px;margin:13px 0;white-space:pre}
+.prose code{background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+.prose pre code{border:0;background:none;padding:0;font:inherit}
+.prose blockquote{border-left:3px solid var(--accent);padding:2px 0 2px 14px;margin:12px 0;color:var(--muted)}
+.prose a{text-decoration:underline;text-underline-offset:2px}
+.message-actions{display:flex;gap:7px;align-items:center;margin-top:13px}
+.message-actions button{font-size:11px;display:flex;align-items:center;gap:5px;padding:7px 8px;color:var(--muted);border:0;background:transparent;border-radius:8px}
+.message-actions button:hover{color:var(--text);background:var(--hover)}
+.trace{margin:12px 0 0;padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:var(--soft);color:var(--muted);font-size:12px;max-width:100%}
+.trace summary{cursor:pointer;display:flex;gap:8px;align-items:center;list-style:none;font-weight:640}
+.trace summary::-webkit-details-marker{display:none}
+.trace ul{margin:12px 0 0;padding-left:20px;line-height:1.7}
+.trace li{overflow-wrap:anywhere}.trace .ok{color:#53936b}.trace .error{color:#cf785f}
+.message.error .prose{color:#bf5d49}
+.thinking{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13px;padding:7px 0}
+.thinking-dots{display:flex;gap:4px}.thinking-dots i{background:var(--accent);width:5px;height:5px;border-radius:50%;animation:pulse 1.25s ease-in-out infinite}.thinking-dots i:nth-child(2){animation-delay:.18s}.thinking-dots i:nth-child(3){animation-delay:.36s}
+@keyframes pulse{0%,80%,100%{opacity:.28;transform:scale(.8)}40%{opacity:1;transform:scale(1.13)}}
+.composer-wrap{flex:0 0 auto;padding:12px 30px 22px;background:linear-gradient(to bottom,transparent,var(--bg) 14%);position:relative;z-index:2}
+.composer-shell{width:min(100%,766px);margin:auto;background:var(--paper);border:1px solid var(--line);border-radius:19px;box-shadow:var(--shadow);transition:border-color .2s}
+.composer-shell:focus-within{border-color:color-mix(in srgb,var(--accent) 42%,var(--line))}
+.composer textarea{width:100%;min-height:62px;max-height:180px;resize:none;overflow-y:auto;border:none;outline:none!important;background:transparent;color:var(--text);padding:18px 20px 8px;line-height:1.6;font-size:14px;display:block}
+.composer textarea::placeholder{color:var(--hint)}
+.composer-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 10px 10px 12px}
+.composer-left,.composer-right{display:flex;align-items:center;gap:4px}
+.subtle-button{background:transparent;border:0;color:var(--muted);padding:9px 10px;border-radius:9px;display:flex;gap:7px;align-items:center;font-size:12px}
+.subtle-button:hover{background:var(--soft);color:var(--text)}
+.model-chip{font-size:11px;color:var(--muted);padding:6px 9px}
+.send-button{width:35px;height:35px;display:grid;place-items:center;background:var(--accent);border:0;color:white;border-radius:11px;transition:background .15s,transform .15s}
+.send-button:not(:disabled):hover{background:var(--accent-dark);transform:translateY(-1px)}
+.send-button .icon{width:18px;height:18px}
+.under-composer{text-align:center;max-width:766px;margin:9px auto 0;color:var(--hint);font-size:11px;line-height:1.5}
+.inspector{width:var(--inspector-width);flex:0 0 var(--inspector-width);background:var(--paper);border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0;z-index:18}
+.inspector[hidden]{display:none!important}
+.inspector-head{display:flex;align-items:center;justify-content:space-between;padding:19px 20px;border-bottom:1px solid var(--line)}
+.inspector-head h2{font-size:14px;margin:0;color:var(--text-strong)}
+.inspector-copy{font-size:12px;line-height:1.65;color:var(--muted);margin:0 0 18px}
+.inspector-main{overflow:auto;min-height:0;padding:22px 19px;flex:1}
+.input-shell{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:11px;padding:0 11px;background:var(--bg)}
+.input-shell:focus-within{border-color:var(--accent)}
+.input-shell .icon{color:var(--hint)}
+.input-shell input{border:0;outline:0;background:transparent;color:var(--text);height:43px;width:100%;min-width:0}
+.inspector-buttons{display:flex;justify-content:flex-end;margin-top:10px}
+.action-btn{border:0;border-radius:9px;background:var(--accent);color:#fff;padding:9px 15px;font-size:12px;font-weight:650}
+.action-btn:hover{background:var(--accent-dark)}
+.results-count{font-size:11px;color:var(--muted);padding:17px 0 11px}
+.result{padding:13px 0;border-top:1px solid var(--line)}
+.result a{font-size:12px;font-weight:680;text-decoration:none;overflow-wrap:anywhere;line-height:1.5;display:block}
+.result a:hover{text-decoration:underline}
+.result p{color:var(--muted);font-size:11.5px;line-height:1.6;margin:8px 0 0;overflow-wrap:anywhere}
+.reference-note{margin-top:20px;border-radius:10px;padding:13px;background:var(--soft);font-size:11px;color:var(--muted);line-height:1.6}
+.overlay{position:fixed;inset:0;background:rgba(10,8,4,.42);z-index:24;display:none}
+.dialog{border:1px solid var(--line);background:var(--paper);color:var(--text);border-radius:19px;box-shadow:0 28px 90px rgba(0,0,0,.18);padding:0;width:min(92vw,495px);max-height:90dvh;overflow:auto}
+.dialog::backdrop{background:rgba(19,16,13,.45);backdrop-filter:blur(3px)}
+.dialog-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:18px 22px}
+.dialog-head h2{font-size:17px;margin:0;font-weight:700}.dialog-body{padding:21px 22px 24px}
+.field{margin:0 0 17px}.field label{display:block;font-weight:680;margin-bottom:8px;font-size:12px}
+.field input,.field select{width:100%;height:43px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);padding:0 13px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field-help{font-size:11px;color:var(--muted);line-height:1.6;margin:7px 0 0}
+.status-panel{padding:12px 14px;background:var(--soft);border-radius:10px;display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;line-height:1.4;margin-bottom:16px}
+.dialog-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:5px}
+.settings-link{font-size:12px;text-decoration:none}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--text-strong);color:var(--bg);box-shadow:var(--shadow);padding:10px 15px;border-radius:10px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;z-index:70;max-width:min(90vw,500px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+[hidden]{display:none!important}
+@media(max-width:1190px){.inspector{position:fixed;right:0;top:0;height:100dvh;box-shadow:-8px 0 30px rgba(0,0,0,.09);z-index:35}.inspector-overlay.on{display:block;z-index:32}}
+@media(max-width:880px){.sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-105%);transition:transform .24s;box-shadow:14px 0 30px rgba(0,0,0,.06)}.sidebar.open{transform:translateX(0)}.sidebar-overlay.on{display:block;z-index:26}.mobile-menu{display:inline-flex}.topbar{padding:0 17px}.top-version{display:none}.welcome{padding-top:clamp(55px,11vh,115px)}}
+@media(max-width:610px){.topbar{height:56px;flex-basis:56px}.top-title{max-width:175px}.welcome{padding:55px 23px 24px}.welcome h1{font-size:39px;letter-spacing:-1.7px}.welcome-description{font-size:13px;margin-bottom:28px}.prompts{grid-template-columns:1fr}.prompt-card{min-height:68px;padding:12px}.composer-wrap{padding:8px 11px 13px}.composer-shell{border-radius:16px}.composer textarea{padding:15px 14px 8px}.composer-tools{padding:4px 7px 8px}.under-composer{font-size:10px}.thread{padding:15px 17px 25px;gap:25px}.message{gap:10px}.message.user .message-content{max-width:95%}.avatar{width:26px;height:26px;flex-basis:26px}.inspector{width:min(100vw,410px);flex-basis:auto}.sidebar-top{padding-top:20px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<header>
-<div><h1>ATLAS <span>AI</span></h1><small>AGENT RUNTIME · CLOUD-FIRST</small></div>
-<span class="pill">V0.2 · REFERENCE-POWERED</span>
-</header>
-<div class="layout">
-<aside aria-label="Agent settings">
-<h2>Connection</h2>
-<div class="field"><label for="endpoint">Cloudflare Worker URL</label><input id="endpoint" type="url" autocomplete="url" placeholder="https://atlas-agent-api.your-name.workers.dev"></div>
-<div class="field"><label for="access">Operator access key</label><input id="access" type="password" autocomplete="off" placeholder="Cloudflare ATLAS_ACCESS_KEY secret"></div>
-<div class="field"><label for="mode">Runtime</label><select id="mode"><option value="live">Live agent</option><option value="demo">UI demo only</option></select></div>
-<button id="connect" class="secondary small" type="button">Check Worker</button>
-<div id="status" class="status" style="margin-top:12px"><span class="dot"></span>Not connected</div>
-<p class="helper">Your access key is used only for requests and is not saved in browser storage. The Worker URL may be remembered on this device.</p>
-<hr>
-<h2>Reference archive</h2>
-<p class="helper">Search the complete imported CL4R1T4S snapshot. Matches are loaded as untrusted source excerpts, not executable instructions.</p>
-<div class="field"><label for="search">Search files and tool definitions</label><input id="search" placeholder="Claude Code agent tools"></div>
-<button id="searchBtn" class="secondary small" type="button">Search archive</button>
-<div id="results" aria-live="polite"></div>
-<hr>
-<h2>Enabled tools</h2>
-<p class="helper">✓ Search reference archive<br>✓ Read source excerpts<br>✓ List ATLAS GitHub files<br>✓ Read ATLAS GitHub files<br>— Repository writes disabled<br>— Code execution disabled</p>
-<a class="footlink" target="_blank" rel="noopener noreferrer" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI">View ATLAS source ↗</a>
-</aside>
-<section class="main" aria-label="AI conversation">
-<div class="main-head"><div><strong>ATLAS · Development Agent</strong><small>Hosted model + reference retrieval + read-only GitHub tools</small></div><button class="secondary small" id="clear" type="button">New chat</button></div>
-<div id="chat" aria-live="polite"><div class="bubble assistant">ATLAS v0.2 is ready for configuration. To enable live responses, deploy the Worker and its AI binding, then enter your Worker URL and operator key.
+<div class="app">
+  <div class="overlay sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+  <aside class="sidebar" id="sidebar" aria-label="ATLAS navigation">
+    <div class="sidebar-top">
+      <a class="brand" href="./" aria-label="ATLAS home">
+        <span class="brandmark"><span data-icon="sparkles"></span></span>
+        <span><span class="brand-name">ATLAS</span><span class="brand-sub">AI WORKSPACE</span></span>
+      </a>
+      <button class="icon-btn" id="collapseSidebar" type="button" aria-label="Close sidebar" title="Close sidebar"><span data-icon="panel-left-close"></span></button>
+    </div>
+    <div class="sidebar-actions">
+      <button id="newChat" type="button" class="nav-action primary"><span data-icon="plus"></span> New chat</button>
+      <button id="sidebarSearch" type="button" class="nav-action"><span data-icon="search"></span> Search archive</button>
+      <button id="sidebarSettings" type="button" class="nav-action"><span data-icon="sliders"></span> Connection settings</button>
+    </div>
+    <div class="section-label">THIS SESSION</div>
+    <div id="sessionList" class="sessions" aria-label="Conversations in this tab"></div>
+    <div class="sidebar-footer">
+      <div class="status-row"><span class="status-dot" id="sideDot"></span><span id="sideStatus">Connection not checked</span></div>
+      <a class="nav-action footer-link" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" rel="noopener noreferrer" target="_blank"><span data-icon="github"></span> ATLAS on GitHub <span style="margin-left:auto" data-icon="external"></span></a>
+      <button id="footerSettings" type="button" class="nav-action footer-link"><span data-icon="settings"></span> Preferences</button>
+    </div>
+  </aside>
 
-You can ask me to search the imported Claude Code archive, explain its architecture, or inspect files in the ATLAS GitHub repository. Code execution and repository-writing actions are not enabled.</div></div>
-<form id="composer" class="composer"><textarea id="message" required placeholder="Ask ATLAS to inspect a tool, file, or workflow..." aria-label="Chat message"></textarea><button id="send" type="submit">Send</button></form>
-<div class="note">Agent actions and archival sources are shown alongside responses. Imported prompts never become trusted system instructions.</div>
-</section>
+  <main class="workspace" aria-label="ATLAS conversation workspace">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn mobile-menu" id="mobileMenu" aria-label="Open navigation" type="button"><span data-icon="menu"></span></button>
+        <span class="top-title" id="conversationTitle">New conversation</span>
+        <span class="top-chevron" data-icon="chevron-down"></span>
+        <span class="top-version">ATLAS Agent</span>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn" id="topSearch" type="button" title="Search reference archive" aria-label="Search reference archive"><span data-icon="search"></span></button>
+        <button class="icon-btn" id="themeToggle" type="button" title="Toggle light and dark mode" aria-label="Toggle appearance"><span data-icon="moon" id="themeIcon"></span></button>
+        <button class="icon-btn" id="topNewChat" type="button" title="New conversation" aria-label="New conversation"><span data-icon="square-pen"></span></button>
+      </div>
+    </header>
+    <div class="content-scroll" id="chatScroll">
+      <section id="welcome" class="welcome" aria-label="Welcome to ATLAS">
+        <div class="hero-overline"><span class="hero-mark" data-icon="sparkles"></span><span>YOUR AI DEVELOPMENT PARTNER</span></div>
+        <h1>What can I help you<br><em>build today?</em></h1>
+        <p class="welcome-description">An uncluttered space to explore ideas, understand code, and work with your repository and reference archive.</p>
+        <div class="quick-label">Start with an idea</div>
+        <div class="prompts">
+          <button class="prompt-card" type="button" data-prompt="Inspect the ATLAS-AI GitHub repository and summarize its architecture."><span data-icon="code"></span><span><strong>Explore my codebase</strong><small>Understand the structure of ATLAS AI</small></span></button>
+          <button class="prompt-card" type="button" data-action="archive"><span data-icon="book"></span><span><strong>Search references</strong><small>Discover prompts, tools, and source excerpts</small></span></button>
+          <button class="prompt-card" type="button" data-prompt="Review the ATLAS AI agent architecture and suggest the highest-impact improvements."><span data-icon="compass"></span><span><strong>Improve the agent</strong><small>Explore a practical development roadmap</small></span></button>
+          <button class="prompt-card" type="button" data-prompt="Explain what the ATLAS agent can currently do and which tools are enabled."><span data-icon="layers"></span><span><strong>Understand capabilities</strong><small>See what the current runtime supports</small></span></button>
+        </div>
+      </section>
+      <div id="thread" class="thread" aria-live="polite" aria-relevant="additions text"></div>
+    </div>
+    <div class="composer-wrap">
+      <form id="composer" class="composer composer-shell">
+        <textarea id="message" required rows="2" placeholder="Message ATLAS..." aria-label="Message ATLAS" maxlength="6500"></textarea>
+        <div class="composer-tools">
+          <div class="composer-left"><button id="composerArchive" type="button" class="subtle-button" title="Search indexed reference archive"><span data-icon="book"></span><span>Reference archive</span></button></div>
+          <div class="composer-right"><span class="model-chip" id="runtimeLabel">Live agent</span><button class="send-button" id="send" type="submit" aria-label="Send message" title="Send message"><span data-icon="arrow-up"></span></button></div>
+        </div>
+      </form>
+      <p class="under-composer">ATLAS can make mistakes. GitHub and reference tools are read-only.</p>
+    </div>
+  </main>
+
+  <div class="overlay inspector-overlay" id="inspectorOverlay" aria-hidden="true"></div>
+  <aside id="inspector" class="inspector" aria-label="Reference archive search" hidden>
+    <div class="inspector-head"><h2>Reference archive</h2><button class="icon-btn" id="closeInspector" type="button" aria-label="Close reference search"><span data-icon="x"></span></button></div>
+    <div class="inspector-main">
+      <p class="inspector-copy">Find source documents, agent instructions, and tool definitions from the indexed CL4R1T4S archive.</p>
+      <form id="searchForm"><div class="input-shell"><span data-icon="search"></span><input id="search" type="search" placeholder="Search 75 source files..." aria-label="Search indexed source files" autocomplete="off" required></div><div class="inspector-buttons"><button class="action-btn" id="searchBtn" type="submit">Search archive</button></div></form>
+      <div id="results" aria-live="polite"></div>
+      <div class="reference-note">Archive text is treated as <strong>untrusted reference material</strong>, not instructions for ATLAS to execute. Search can run directly through GitHub Pages if the Worker is unavailable.</div>
+    </div>
+  </aside>
 </div>
+
+<dialog class="dialog" id="settingsDialog" aria-label="ATLAS connection settings">
+  <div class="dialog-head"><h2>Connection &amp; preferences</h2><button id="closeSettings" class="icon-btn" type="button" aria-label="Close settings"><span data-icon="x"></span></button></div>
+  <div class="dialog-body">
+    <div class="field"><label for="endpoint">Cloudflare Worker URL</label><input id="endpoint" type="url" autocomplete="url" placeholder="https://atlas-agent-api.example.workers.dev"><p class="field-help">The Worker endpoint is remembered on this device. It can be changed anytime.</p></div>
+    <div class="field"><label for="access">ATLAS access key</label><input id="access" type="password" autocomplete="off" spellcheck="false" placeholder="Enter your ATLAS_ACCESS_KEY"><p class="field-help">Your access key stays in this tab's memory and is never stored in localStorage or included in shared URLs.</p></div>
+    <div class="field"><label for="mode">Runtime</label><select id="mode"><option value="live">Live Cloudflare Workers AI</option><option value="demo">UI demonstration only</option></select></div>
+    <div class="status-panel"><span class="status-dot" id="settingsDot"></span><span id="status">Connection not checked</span></div>
+    <div class="dialog-footer"><a class="settings-link" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">View source code ↗</a><button id="connect" class="action-btn" type="button">Check Worker</button></div>
+  </div>
+</dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
-const $=id=>document.getElementById(id);
-const endpoint=$("endpoint"),access=$("access"),mode=$("mode"),status=$("status"),chat=$("chat"),send=$("send"),message=$("message");
-let history=[];
-try{endpoint.value=localStorage.getItem("atlas-worker-url")||"";}catch{}
-endpoint.addEventListener("change",()=>{try{localStorage.setItem("atlas-worker-url",endpoint.value.trim());}catch{}});
-function bubble(role,text,err=false){const el=document.createElement("div");el.className="bubble "+role+(err?" error":"");el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;return el;}
-function workerUrl(){const value=endpoint.value.trim().replace(/\/$/,"");try{const url=new URL(value);if(url.protocol!=="https:")throw Error();return url.origin;}catch{throw Error("Enter a valid HTTPS Cloudflare Worker URL");}}
-async function api(path,data){const response=await fetch(workerUrl()+path,{method:"POST",headers:{"Content-Type":"application/json","X-Atlas-Access-Key":access.value},body:JSON.stringify(data)});let result;try{result=await response.json();}catch{throw Error("Worker returned an invalid response");}if(!response.ok)throw Error(result.error||("HTTP "+response.status));return result;}
-$("connect").onclick=async()=>{status.innerHTML='<span class="dot"></span>Checking…';try{const r=await fetch(workerUrl()+"/health");if(!r.ok)throw Error("Worker returned "+r.status);const j=await r.json();status.innerHTML='<span class="dot '+(j.aiConfigured&&j.accessKeyConfigured?"ok":"err")+'"></span>'+("Worker v"+j.version+" · AI "+(j.aiConfigured?"bound":"missing")+" · access "+(j.accessKeyConfigured?"configured":"missing"));}catch(err){status.innerHTML='<span class="dot err"></span>'+err.message;}};
-$("clear").onclick=()=>{history=[];chat.innerHTML="";bubble("assistant","New conversation started.");};
-let localReferenceIndex=null;
-async function localReferenceSearch(query) {
-  if(!localReferenceIndex){
-    const response=await fetch("./reference-index.json",{cache:"default"});
-    if(!response.ok)throw Error("Local reference index is not yet published");
-    localReferenceIndex=await response.json();
-  }
-  const keys=Array.from(new Set((query.toLowerCase().match(/[a-z][a-z0-9_-]{2,}/g)||[]))).slice(0,12);
-  const ranked=[];
-  for(const c of localReferenceIndex.chunks){
-    const terms=new Set(c.terms||[]);
-    let score=0;
-    for(const key of keys){if(terms.has(key))score+=3;if(c.path.toLowerCase().includes(key))score+=6;}
-    if(score>0)ranked.push({...c,score});
-  }
-  ranked.sort((a,b)=>b.score-a.score);
-  const seen=new Set(),matches=[];
-  for(const match of ranked){if(seen.has(match.path))continue;seen.add(match.path);matches.push(match);if(matches.length===10)break;}
-  return {matches,totalFiles:localReferenceIndex.files.length,totalChunks:localReferenceIndex.chunks.length,local:true};
-}
-$("searchBtn").onclick=async()=>{
-  const value=$("search").value.trim(),out=$("results");if(!value)return;out.textContent="Searching reference index…";
-  try{
-    let result;
-    try{result=await api("/search",{query:value});}
-    catch{result=await localReferenceSearch(value);}
-    out.textContent="";
-    const count=document.createElement("p");count.className="helper";
-    count.textContent=result.matches.length+" matches from "+result.totalFiles+" indexed text files"+(result.local?" · direct GitHub Pages search":"");
-    out.append(count);
-    for(const item of result.matches){
-      const card=document.createElement("div");card.className="result";
-      const link=document.createElement("a");link.target="_blank";link.rel="noopener noreferrer";
-      link.href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/external/CL4R1T4S/"+item.path.split("/").map(encodeURIComponent).join("/");
-      link.textContent=item.path+" ↗";
-      const excerpt=document.createElement("p");excerpt.textContent=item.snippet||"";
-      card.append(link,excerpt);out.append(card);
-    }
-  }catch(err){out.textContent="Search failed: "+err.message;}
+const $ = id => document.getElementById(id);
+const ICONS = {
+  "sparkles":'<path d="m12 2 1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9L12 2Z"/><path d="m19 17 .8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8L19 17Z"/>',
+  "plus":'<path d="M12 5v14M5 12h14"/>',
+  "search":'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+  "sliders":'<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="17" r="2" fill="currentColor" stroke="none"/>',
+  "panel-left-close":'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m8-11-3 3 3 3"/>',
+  "github":'<path d="M9 19c-4 1-4-2-6-2m12 4v-3.5a3 3 0 0 0-.8-2.3c2.7-.3 5.5-1.3 5.5-6A4.7 4.7 0 0 0 18.5 5 4.4 4.4 0 0 0 18.4 2s-1 0-3 1.5a10.4 10.4 0 0 0-5.8 0C7.6 2 6.6 2 6.6 2a4.4 4.4 0 0 0-.1 3A4.7 4.7 0 0 0 5.2 8.2c0 4.7 2.8 5.7 5.5 6A3 3 0 0 0 10 17.5V21"/>',
+  "external":'<path d="M13 5h6v6M19 5l-9 9"/><path d="M19 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>',
+  "settings":'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a2 2 0 0 0 .4 2.2l-2 2a2 2 0 0 0-2.2-.4l-1 .4h-5l-1-.4a2 2 0 0 0-2.2.4l-2-2A2 2 0 0 0 4.6 15l-.4-1v-4l.4-1a2 2 0 0 0-.4-2.2l2-2a2 2 0 0 0 2.2.4l1-.4h5l1 .4a2 2 0 0 0 2.2-.4l2 2A2 2 0 0 0 19.4 9l.4 1v4Z"/>',
+  "menu":'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  "chevron-down":'<path d="m6 9 6 6 6-6"/>',
+  "moon":'<path d="M20 15.5A8 8 0 0 1 8.5 4 8 8 0 1 0 20 15.5Z"/>',
+  "sun":'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5M17.5 17.5 19 19m0-14-1.5 1.5M6.5 17.5 5 19"/>',
+  "square-pen":'<path d="M12 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7"/><path d="m14.5 5.5 4 4M8 16l4-.6L21 6.5a2.8 2.8 0 0 0-4-4L8 11.4 8 16Z"/>',
+  "code":'<path d="m8 8-4 4 4 4m8-8 4 4-4 4M14 4l-4 16"/>',
+  "book":'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20V17"/>',
+  "compass":'<circle cx="12" cy="12" r="9"/><path d="m15 9-2 5-4 1 2-5 4-1Z"/>',
+  "layers":'<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5m-18 5 9 5 9-5"/>',
+  "arrow-up":'<path d="M12 19V5m-6 6 6-6 6 6"/>',
+  "x":'<path d="M18 6 6 18M6 6l12 12"/>',
+  "copy":'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  "message":'<path d="M20 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 20l.9-4.5a9 9 0 1 1 16.1-4Z"/>'
 };
-$("composer").onsubmit=async event=>{event.preventDefault();const text=message.value.trim();if(!text)return;message.value="";bubble("user",text);history.push({role:"user",content:text});send.disabled=true;const working=bubble("assistant","Running…");try{if(mode.value==="demo"){working.textContent="This is UI demo mode. Choose Live agent and configure Cloudflare Worker to call the hosted model and tools.";history.push({role:"assistant",content:working.textContent});}else{const result=await api("/chat",{messages:history.slice(-12)});working.textContent=result.reply||"No answer returned.";history.push({role:"assistant",content:working.textContent});if(Array.isArray(result.trace)&&result.trace.length){const details=document.createElement("details");details.className="trace";const summary=document.createElement("summary");summary.textContent="Agent activity · "+result.trace.length+" step(s)";const list=document.createElement("ul");for(const t of result.trace){const li=document.createElement("li");li.textContent=t.tool+" — "+(t.error||t.status||"sources loaded");if(Array.isArray(t.sources)&&t.sources.length)li.textContent+=": "+t.sources.join(", ");list.append(li);}details.append(summary,list);chat.append(details);}}}catch(err){working.textContent="Request failed: "+err.message;working.classList.add("error");history.pop();}finally{send.disabled=false;chat.scrollTop=chat.scrollHeight;message.focus();}};
-message.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit();}});
+function svg(name, cls='icon') {return '<svg class="'+cls+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(ICONS[name]||ICONS.sparkles)+'</svg>';}
+function setIcons(root=document){root.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=svg(el.dataset.icon);});}
+setIcons();
+const endpoint=$('endpoint'),access=$('access'),mode=$('mode'),status=$('status'),thread=$('thread'),message=$('message'),send=$('send');
+const DEFAULT_WORKER='https://atlas-agent-api.gulfcoastorganics.workers.dev';
+try{endpoint.value=localStorage.getItem('atlas-worker-url')||DEFAULT_WORKER;}catch{endpoint.value=DEFAULT_WORKER;}
+endpoint.addEventListener('change',()=>{try{localStorage.setItem('atlas-worker-url',endpoint.value.trim());}catch{}});
+const storedTheme=(()=>{try{return localStorage.getItem('atlas-theme');}catch{return null;}})();
+let theme=storedTheme==='dark'?'dark':'light';
+function setTheme(value){theme=value;document.documentElement.dataset.theme=theme;$('themeIcon').innerHTML=svg(theme==='dark'?'sun':'moon');document.querySelector('meta[name="theme-color"]').content=theme==='dark'?'#1d1c1a':'#faf9f6';try{localStorage.setItem('atlas-theme',theme);}catch{}}
+setTheme(theme);
+$('themeToggle').onclick=()=>setTheme(theme==='light'?'dark':'light');
+let sessions=[],activeId=null,requestPending=false,pendingSession=null,toastTimer=null;
+function currentSession(){return sessions.find(s=>s.id===activeId);}
+function createSession(){const session={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),title:'New conversation',history:[],transcript:[]};sessions.unshift(session);sessions=sessions.slice(0,12);activeId=session.id;renderSessions();renderThread();closeSidebar();return session;}
+function renderSessions(){const root=$('sessionList');root.textContent='';sessions.forEach(s=>{const b=document.createElement('button');b.type='button';b.className='session-btn'+(s.id===activeId?' active':'');b.innerHTML=svg('message','icon sm');const title=document.createElement('span');title.textContent=s.title;b.append(title);b.onclick=()=>{activeId=s.id;renderSessions();renderThread();closeSidebar();};root.append(b);});}
+function renderThread(){const s=currentSession();if(!s)return;thread.textContent='';$('welcome').hidden=s.transcript.length>0;$('conversationTitle').textContent=s.title;s.transcript.forEach(m=>appendMessage(m));if(requestPending&&pendingSession===s.id)appendThinking();if(s.transcript.length)scrollBottom();else $('chatScroll').scrollTop=0;}
+function scrollBottom(){requestAnimationFrame(()=>{$('chatScroll').scrollTop=$('chatScroll').scrollHeight;});}
+function appendMessage(data){const article=document.createElement('article');article.className='message '+data.role+(data.error?' error':'');if(data.role==='assistant'){const avatar=document.createElement('div');avatar.className='avatar';avatar.innerHTML=svg('sparkles');article.append(avatar);}
+ const body=document.createElement('div');body.className='message-content';if(data.role==='assistant'){const label=document.createElement('div');label.className='sender';label.textContent='ATLAS';body.append(label);const prose=document.createElement('div');prose.className='prose';renderMarkdown(prose,data.text);body.append(prose);const actions=document.createElement('div');actions.className='message-actions';const copy=document.createElement('button');copy.type='button';copy.innerHTML=svg('copy','icon sm')+' Copy';copy.onclick=()=>copyText(data.text);actions.append(copy);body.append(actions);if(data.trace?.length){const details=document.createElement('details');details.className='trace';const summary=document.createElement('summary');summary.innerHTML=svg('layers','icon sm')+' Agent activity · '+data.trace.length+' events';details.append(summary);const ul=document.createElement('ul');data.trace.forEach(t=>{const li=document.createElement('li');const state=t.status==='ok'?'ok':(t.error?'error':'');li.className=state;li.textContent=t.tool+' — '+(t.error||t.status||(t.sources?.length?t.sources.join(', '):'sources loaded'));ul.append(li);});details.append(ul);body.append(details);}}else{body.textContent=data.text;}
+ article.append(body);thread.append(article);return article;}
+function appendThinking(){const row=document.createElement('div');row.className='message assistant';row.id='thinking';row.innerHTML='<div class="avatar">'+svg('sparkles')+'</div><div class="message-content"><div class="sender">ATLAS</div><div class="thinking"><span class="thinking-dots"><i></i><i></i><i></i></span> Working on your request…</div></div>';thread.append(row);scrollBottom();}
+function textNode(str){return document.createTextNode(str);}
+function inlineMarkdown(parent,text){const re=/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*|\*([^*]+)\*/g;let last=0,m;while((m=re.exec(text))){if(m.index>last)parent.append(textNode(text.slice(last,m.index)));let el;if(m[1]){el=document.createElement('a');el.textContent=m[1];el.href=m[2];el.target='_blank';el.rel='noopener noreferrer';}else if(m[3]){el=document.createElement('code');el.textContent=m[3];}else if(m[4]){el=document.createElement('strong');el.textContent=m[4];}else{el=document.createElement('em');el.textContent=m[5];}parent.append(el);last=re.lastIndex;}if(last<text.length)parent.append(textNode(text.slice(last)));}
+function renderMarkdown(root,text){const lines=String(text||'').split(/\r?\n/);let i=0;while(i<lines.length){const line=lines[i];if(!line.trim()){i++;continue;}if(/^```/.test(line)){const block=[];i++;while(i<lines.length&&!/^```/.test(lines[i]))block.push(lines[i++]);if(i<lines.length)i++;const pre=document.createElement('pre');const code=document.createElement('code');code.textContent=block.join('\n');pre.append(code);root.append(pre);continue;}const head=line.match(/^(#{1,4})\s+(.*)/);if(head){const h=document.createElement(head[1].length>2?'h4':'h3');inlineMarkdown(h,head[2]);root.append(h);i++;continue;}if(/^>\s?/.test(line)){const b=document.createElement('blockquote');const p=document.createElement('p');inlineMarkdown(p,line.replace(/^>\s?/,''));b.append(p);root.append(b);i++;continue;}const ordered=/^\s*\d+[.)]\s+/.test(line),bulleted=/^\s*[-*]\s+/.test(line);if(ordered||bulleted){const list=document.createElement(ordered?'ol':'ul');while(i<lines.length&&(ordered?/^\s*\d+[.)]\s+/:/^\s*[-*]\s+/).test(lines[i])){const li=document.createElement('li');inlineMarkdown(li,lines[i].replace(ordered?/^\s*\d+[.)]\s+/:/^\s*[-*]\s+/,''));list.append(li);i++;}root.append(list);continue;}const paragraph=[];while(i<lines.length&&lines[i].trim()&&!/^```|^#{1,4}\s|^>\s?|^\s*[-*]\s+|^\s*\d+[.)]\s+/.test(lines[i]))paragraph.push(lines[i++]);if(!paragraph.length){i++;continue;}const p=document.createElement('p');paragraph.forEach((s,j)=>{if(j)p.append(document.createElement('br'));inlineMarkdown(p,s);});root.append(p);}}
+function toast(txt){const el=$('toast');el.textContent=txt;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500);}
+async function copyText(s){try{await navigator.clipboard.writeText(s);toast('Copied to clipboard');}catch{toast('Clipboard unavailable in this browser');}}
+function workerUrl(){const v=endpoint.value.trim().replace(/\/$/,'');try{const url=new URL(v);if(url.protocol!=='https:')throw Error();return url.origin;}catch{throw Error('Enter a valid HTTPS Cloudflare Worker URL in settings.');}}
+async function api(path,data){const r=await fetch(workerUrl()+path,{method:'POST',headers:{'Content-Type':'application/json','X-Atlas-Access-Key':access.value},body:JSON.stringify(data)});let result;try{result=await r.json();}catch{throw Error('ATLAS returned an invalid JSON response.');}if(!r.ok)throw Error(result.error||('HTTP '+r.status));return result;}
+function statusUpdate(txt,state=''){status.textContent=txt;$('sideStatus').textContent=txt;[$('sideDot'),$('settingsDot')].forEach(el=>{el.className='status-dot'+(state==='ok'?' ok':state==='bad'?' bad':'');});}
+$('connect').onclick=async()=>{statusUpdate('Checking Worker…');try{const r=await fetch(workerUrl()+'/health');if(!r.ok)throw Error('Worker returned HTTP '+r.status);const j=await r.json();if(!j.aiConfigured||!j.accessKeyConfigured)throw Error('AI or access key binding not configured');statusUpdate('Worker v'+j.version+' · AI ready'+(access.value?' · key entered':' · enter access key'),'ok');toast('Worker is responding');}catch(err){statusUpdate('Connection failed: '+err.message,'bad');}};
+mode.addEventListener('change',()=>{$('runtimeLabel').textContent=mode.value==='live'?'Live agent':'UI demo';});
+function openSettings(){closeSidebar();const d=$('settingsDialog');if(!d.open)d.showModal();setTimeout(()=>access.focus(),60);}
+function closeSettings(){if($('settingsDialog').open)$('settingsDialog').close();}
+$('sidebarSettings').onclick=openSettings;$('footerSettings').onclick=openSettings;$('closeSettings').onclick=closeSettings;
+function closeSidebar(){$('sidebar').classList.remove('open');$('sidebarOverlay').classList.remove('on');}
+function openSidebar(){$('sidebar').classList.add('open');$('sidebarOverlay').classList.add('on');}
+$('mobileMenu').onclick=openSidebar;$('collapseSidebar').onclick=closeSidebar;$('sidebarOverlay').onclick=closeSidebar;
+function openInspector(){$('inspector').hidden=false;$('inspectorOverlay').classList.add('on');closeSidebar();setTimeout(()=>$('search').focus(),50);}
+function closeInspector(){$('inspector').hidden=true;$('inspectorOverlay').classList.remove('on');}
+$('sidebarSearch').onclick=openInspector;$('topSearch').onclick=openInspector;$('composerArchive').onclick=openInspector;$('closeInspector').onclick=closeInspector;$('inspectorOverlay').onclick=closeInspector;
+$('newChat').onclick=createSession;$('topNewChat').onclick=createSession;
+for(const b of document.querySelectorAll('.prompt-card')){b.onclick=()=>{if(b.dataset.action==='archive'){openInspector();return;}message.value=b.dataset.prompt||'';fitMessage();message.focus();};}
+let localReferenceIndex=null;
+async function localReferenceSearch(query){if(!localReferenceIndex){const response=await fetch('./reference-index.json',{cache:'default'});if(!response.ok)throw Error('Reference index not available on GitHub Pages');localReferenceIndex=await response.json();}const keys=Array.from(new Set((query.toLowerCase().match(/[a-z][a-z0-9_-]{2,}/g)||[]))).slice(0,12);const ranked=[];for(const c of localReferenceIndex.chunks){let score=0;const name=c.path.toLowerCase();for(const k of keys){if(c.terms.includes(k))score+=3;if(name.includes(k))score+=6;}if(score>0)ranked.push({...c,score});}ranked.sort((a,b)=>b.score-a.score);const seen=new Set(),matches=[];for(const item of ranked){if(seen.has(item.path))continue;seen.add(item.path);matches.push(item);if(matches.length>=10)break;}return {matches,totalFiles:localReferenceIndex.files.length,totalChunks:localReferenceIndex.chunks.length,local:true};}
+$('searchForm').onsubmit=async e=>{e.preventDefault();const value=$('search').value.trim();if(!value)return;const out=$('results');out.textContent='Searching archive…';$('searchBtn').disabled=true;try{let res;try{if(!access.value)throw Error('No access key entered');res=await api('/search',{query:value});}catch{res=await localReferenceSearch(value);}out.textContent='';const count=document.createElement('div');count.className='results-count';count.textContent=res.matches.length+' matches · '+res.totalFiles+' files'+(res.local?' · GitHub Pages':'');out.append(count);for(const m of res.matches){const card=document.createElement('div');card.className='result';const a=document.createElement('a');a.href='https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/external/CL4R1T4S/'+m.path.split('/').map(encodeURIComponent).join('/');a.textContent=m.path+' ↗';a.target='_blank';a.rel='noopener noreferrer';const p=document.createElement('p');p.textContent=m.snippet||'No preview available';card.append(a,p);out.append(card);}if(!res.matches.length)out.textContent='No matches found. Try different keywords.';}catch(err){out.textContent='Search failed: '+err.message;}finally{$('searchBtn').disabled=false;}};
+function fitMessage(){message.style.height='auto';message.style.height=Math.min(message.scrollHeight,180)+'px';}
+message.addEventListener('input',fitMessage);
+message.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('composer').requestSubmit();}});
+$('composer').onsubmit=async e=>{e.preventDefault();const text=message.value.trim();if(!text||requestPending)return;if(mode.value==='live'&&!access.value.trim()){toast('Enter your ATLAS access key in settings first');openSettings();return;}
+ const s=currentSession();message.value='';fitMessage();s.history.push({role:'user',content:text});s.transcript.push({role:'user',text});if(s.title==='New conversation')s.title=text.slice(0,44)+(text.length>44?'…':'');renderSessions();renderThread();requestPending=true;pendingSession=s.id;send.disabled=true;renderThread();try{let response;if(mode.value==='demo'){response={reply:'This is a visual demonstration. Select Live Cloudflare Workers AI in settings and provide your ATLAS access key to talk to the deployed agent.',trace:[]};}else{response=await api('/chat',{messages:s.history.slice(-12)});}const content=response.reply||'No answer returned.';s.history.push({role:'assistant',content});s.transcript.push({role:'assistant',text:content,trace:response.trace||[]});}catch(err){s.history.pop();s.transcript.push({role:'assistant',text:'Request failed: '+err.message,error:true});}finally{requestPending=false;pendingSession=null;send.disabled=false;if(activeId===s.id)renderThread();message.focus();}};
+// Chats are session-only. Credentials are never persisted or included in page navigation.
+createSession();
 </script>
 </body>
 </html>
