@@ -93,7 +93,7 @@ pre{background:#272623;color:#ece9e3;padding:15px;border-radius:11px;max-height:
 </div></main></div>
 <script>
 const $=id=>document.getElementById(id);
-let enabled=false, proposal=null, availability=null;
+let enabled=false, proposal=null, availability=null, proposalGeneration=0;
 const DEFAULT='https://atlas-agent-api.gulfcoastorganics.workers.dev';
 try{$('endpoint').value=localStorage.getItem('atlas-worker-url')||DEFAULT;}catch{}
 $('endpoint').addEventListener('change',()=>{try{localStorage.setItem('atlas-worker-url',$('endpoint').value.trim());}catch{}});
@@ -106,7 +106,7 @@ async function api(path,body){
  if(!response.ok)throw Error(String(data.error||'HTTP '+response.status));return data;
 }
 function status(message){$('taskStatus').textContent=message;}
-function reset(){proposal=null;$('review').hidden=true;$('approved').checked=false;$('approved').disabled=true;$('apply').disabled=true;$('result').textContent='';}
+function reset(){proposalGeneration++;proposal=null;$('review').hidden=true;$('approved').checked=false;$('approved').disabled=true;$('apply').disabled=true;$('result').textContent='';}
 function updatePolicy(){
  $('policyHelp').textContent=$('policy').value==='plan'
  ?'No changes are written to GitHub. You can inspect the exact proposed file.'
@@ -134,9 +134,10 @@ $('checkWorker').onclick=checkWorker;
 $('proposalForm').onsubmit=async event=>{
  event.preventDefault();if(!enabled)return;
  if(!$('access').value.trim()){status('Enter your ATLAS operator access key first.');$('access').focus();return;}
- reset();$('generate').disabled=true;status('Reading the file and asking ATLAS to prepare exact edits…');
+ reset();const generation=proposalGeneration;$('generate').disabled=true;status('Reading the file and asking ATLAS to prepare exact edits…');
  try{
   const data=await api('/autonomy/propose',{path:$('targetPath').value.trim(),task:$('task').value.trim(),policy:$('policy').value});
+  if(generation!==proposalGeneration||!enabled){status('Proposal discarded because the task, approval policy, or mode changed during generation.');return;}
   proposal=data;$('reviewHeading').textContent=data.proposal.title;
   $('summary').textContent=data.proposal.summary+' · '+data.proposal.path;
   $('expiry').textContent='Expires in 30 minutes';$('before').textContent=data.before;$('after').textContent=data.after;
