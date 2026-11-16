@@ -10,6 +10,7 @@ const TEST_INDEX = {
 
 const originalFetch = globalThis.fetch;
 let modelCalls = 0;
+const observedSystems = [];
 globalThis.fetch = async (input) => {
   const url = String(input);
   if (url.includes("reference-index.json")) return Response.json(TEST_INDEX);
@@ -23,7 +24,8 @@ globalThis.fetch = async (input) => {
 const env = {
   ALLOWED_ORIGIN: ORIGIN,
   ATLAS_ACCESS_KEY: "unit-test-private-key",
-  AI: {run: async () => {
+  AI: {run: async (_model, input) => {
+    observedSystems.push(input.messages[0].content);
     modelCalls++;
     if (modelCalls === 1) return {tool_calls:[{name:"github_list",arguments:{path:""}}]};
     return {response:"I found the relevant reference and listed the repository."};
@@ -49,11 +51,20 @@ try {
   assert.ok(body.trace.some(t=>t.tool==="github_list"));
   assert.ok(body.trace.some(t=>t.tool==="auto_reference"));
   assert.equal(modelCalls,2);
+  assert.ok(!observedSystems[0].includes('Developer mode is a response preference only'));
+  response = await post('/chat',{messages:[{role:'user',content:'Provide practical code'}],developerMode:true});
+  assert.equal(response.status,200);
+  assert.ok(observedSystems.at(-1).includes('Developer mode is a response preference only'));
+  response = await post('/chat',{messages:[{role:'user',content:'Provide practical code'}],developerMode:'true'});
+  assert.equal(response.status,200);
+  assert.ok(!observedSystems.at(-1).includes('Developer mode is a response preference only'));
 
   response = await post("/search",{query:"hello"},"bad-token");
   assert.equal(response.status,401);
   response = await agent.fetch(new Request("https://worker.example/health",{headers:{"Origin":ORIGIN}}),env);
   assert.equal(response.status,200);
-  assert.equal((await response.json()).writesEnabled,false);
+  const health = await response.json();
+  assert.equal(health.writesEnabled,false);
+  assert.equal(health.developerModeSupported,true);
   console.log("All ATLAS agent tests passed.");
 } finally {globalThis.fetch=originalFetch;}
