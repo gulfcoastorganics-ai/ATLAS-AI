@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#faf9f6">
-<meta name="description" content="ATLAS AI — a focused workspace for thoughtful software development, repository research, and source exploration.">
-<title>ATLAS — AI Development Workspace</title>
+<meta name="description" content="ATLAS Studio — chat, inspect source code, explore tools, and investigate the repository from one read-only AI workspace.">
+<title>ATLAS Studio — AI Development Workspace</title>
 <style>
 :root {
   color-scheme:light;
@@ -167,6 +167,80 @@ svg{display:block;flex-shrink:0}
 @media(max-width:880px){.sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-105%);transition:transform .24s;box-shadow:14px 0 30px rgba(0,0,0,.06)}.sidebar.open{transform:translateX(0)}.sidebar-overlay.on{display:block;z-index:26}.mobile-menu{display:inline-flex}.topbar{padding:0 17px}.top-version{display:none}.welcome{padding-top:clamp(55px,11vh,115px)}}
 @media(max-width:610px){.topbar{height:56px;flex-basis:56px}.top-title{max-width:175px}.welcome{padding:55px 23px 24px}.welcome h1{font-size:39px;letter-spacing:-1.7px}.welcome-description{font-size:13px;margin-bottom:28px}.prompts{grid-template-columns:1fr}.prompt-card{min-height:68px;padding:12px}.composer-wrap{padding:8px 11px 13px}.composer-shell{border-radius:16px}.composer textarea{padding:15px 14px 8px}.composer-tools{padding:4px 7px 8px}.under-composer{font-size:10px}.thread{padding:15px 17px 25px;gap:25px}.message{gap:10px}.message.user .message-content{max-width:95%}.avatar{width:26px;height:26px;flex-basis:26px}.inspector{width:min(100vw,410px);flex-basis:auto}.sidebar-top{padding-top:20px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ATLAS Studio — a conversation-first environment with a real, read-only code workspace. */
+.top-right{gap:8px}
+.mode-switch{display:flex;align-items:center;gap:3px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px;margin-right:8px}
+.mode-tab{border:0;background:transparent;padding:8px 12px;border-radius:8px;color:var(--muted);display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;white-space:nowrap}
+.mode-tab .icon{width:15px;height:15px}
+.mode-tab.active{background:var(--paper);box-shadow:0 1px 6px rgba(28,23,18,.055);color:var(--text-strong)}
+.mode-tab.active .icon{color:var(--accent)}
+.nav-action.code-link.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:700}
+.workspace.code-active #chatScroll,.workspace.code-active .composer-wrap{display:none}
+.code-workspace{display:flex;flex:1;min-height:0;flex-direction:column;background:var(--bg)}
+.code-workspace[hidden]{display:none!important}
+.code-toolbar{height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 24px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper);flex:0 0 60px}
+.code-toolbar-left{min-width:0;display:flex;align-items:center;gap:11px}
+.repo-glyph{width:32px;height:32px;border:1px solid var(--line);background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;border-radius:10px}
+.code-toolbar strong{font-size:13px;color:var(--text-strong)}
+.code-sub{color:var(--muted);font-size:11px;margin-top:4px}
+.code-toolbar-right{display:flex;align-items:center;gap:9px}
+.code-readonly{font-size:10px;letter-spacing:.02em;font-weight:700;border-radius:6px;border:1px solid var(--line);color:var(--muted);padding:5px 8px;white-space:nowrap}
+.code-open-github{font-size:11px;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);white-space:nowrap;background:var(--soft)}
+.code-open-github:hover{border-color:var(--accent)}
+.code-layout{display:grid;grid-template-columns:222px minmax(0,1fr) 275px;min-height:0;flex:1}
+.file-explorer{background:var(--sidebar);border-right:1px solid var(--line);min-height:0;display:flex;flex-direction:column}
+.explorer-heading{display:flex;align-items:center;justify-content:space-between;padding:18px 14px 11px 18px;font-size:10px;color:var(--muted);font-weight:750;letter-spacing:.10em;text-transform:uppercase}
+.explorer-tree{padding:2px 9px 16px;overflow:auto;min-height:0;flex:1}
+.file-group{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--hint);text-transform:uppercase;padding:18px 11px 7px}
+.file-item{font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--text);border:0;background:transparent;border-radius:8px;display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;text-align:left;min-width:0}
+.file-item:hover{background:var(--hover)}
+.file-item.selected{background:var(--accent-soft);color:var(--accent-dark);font-weight:700}
+.file-item .icon{width:15px;height:15px;color:var(--muted)}
+.file-item.selected .icon{color:var(--accent)}
+.file-item span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.explorer-note{border-top:1px solid var(--line);padding:14px;color:var(--muted);font-size:11px;line-height:1.6}
+.editor-panel{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--paper)}
+.editor-tabs{display:flex;align-items:stretch;gap:5px;height:48px;min-height:48px;padding-left:14px;border-bottom:1px solid var(--line);background:var(--paper)}
+.editor-tab{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:670;color:var(--text);padding:0 14px;border-bottom:2px solid var(--accent)}
+.editor-tab .icon{width:15px;height:15px;color:var(--accent)}
+.editor-actions{margin-left:auto;padding-right:12px;display:flex;align-items:center;gap:4px}
+.editor-status{font-size:11px;color:var(--muted);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:8px;min-height:37px}
+.editor-status span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.source-panel{flex:1;min-height:0;overflow:auto;background:var(--code-surface,#212522);color:#e8ece8;scrollbar-width:thin;scrollbar-color:#485148 transparent}
+.code-lines{margin:0;padding:16px 0 30px;white-space:pre;min-width:min-content;font:12px/1.85 'SFMono-Regular',Consolas,'Liberation Mono',monospace;tab-size:2}
+.code-line{display:flex;min-width:100%;padding-right:25px}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.line-no{width:57px;text-align:right;color:#7f8b80;padding:0 18px 0 9px;flex-shrink:0;user-select:none;border-right:1px solid #3b453e;margin-right:18px}
+.code-text{white-space:pre;color:#e1e7df}
+.code-line.comment .code-text{color:#8d9d8d}
+.code-line.keyword .code-text{color:#e4b7a0}
+.code-line.title-line .code-text{color:#b7d6c4}
+.editor-empty{padding:36px;color:#cbd5cb;font-size:12px;line-height:1.75;white-space:pre-wrap}
+.editor-bottom{min-height:39px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 15px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}
+.code-activity{background:var(--bg);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.activity-header{padding:20px 18px 10px;font-size:11px;font-weight:740;color:var(--text-strong);letter-spacing:.04em}
+.activity-sub{margin:0;padding:0 18px 15px;color:var(--muted);font-size:11px;line-height:1.6}
+.activity-list{flex:1;overflow:auto;min-height:0;padding:0 13px 13px}
+.activity-empty{border:1px dashed var(--line);border-radius:11px;padding:18px;color:var(--muted);line-height:1.7;font-size:11px}
+.activity-record{display:flex;gap:10px;border-top:1px solid var(--line);padding:13px 5px;font-size:11px;line-height:1.5}
+.activity-record .icon{width:16px;height:16px;color:var(--accent)}
+.activity-record strong{font-size:11px;display:block;color:var(--text-strong);overflow-wrap:anywhere}
+.activity-record small{color:var(--muted);font-size:10px;overflow-wrap:anywhere}
+.console-shell{border-top:1px solid var(--line);height:222px;display:flex;flex-direction:column;min-height:0;background:var(--soft)}
+.console-heading{display:flex;justify-content:space-between;padding:12px 14px;font-size:11px;font-weight:720;color:var(--text)}
+.console-tag{font-size:10px;color:var(--muted);font-weight:550}
+.console-output{padding:2px 14px;overflow:auto;flex:1;min-height:0;font:10.5px/1.5 ui-monospace,Consolas,monospace;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.console-entry{margin:0 0 6px}
+.console-entry.command{color:var(--accent-dark)}
+.console-form{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);padding:9px 12px}
+.console-form b{color:var(--accent)}
+.console-form input{background:none;border:none;outline:none;width:100%;min-width:0;color:var(--text);font:11px ui-monospace,Consolas,monospace}
+.console-form input::placeholder{color:var(--hint)}
+@media(max-width:1240px){.code-layout{grid-template-columns:200px minmax(0,1fr)}.code-activity{display:none}}
+@media(max-width:830px){.mode-switch{margin-right:0}.code-toolbar{padding:0 14px}.code-open-github{display:none}}
+@media(max-width:640px){.top-right{gap:0}.mode-tab{padding:7px 9px}.mode-tab >span:not([data-icon]){display:none}.code-layout{grid-template-columns:1fr;grid-template-rows:160px minmax(0,1fr)}.file-explorer{border-right:0;border-bottom:1px solid var(--line)}.explorer-heading{padding:9px 14px 3px}.explorer-tree{display:flex;flex-wrap:wrap;align-content:flex-start;gap:2px;padding:4px 8px;overflow:auto}.file-group{width:100%;padding:5px 8px 2px}.file-item{width:auto;max-width:45vw;padding:7px 9px;font-size:10.5px}.explorer-note{display:none}.code-toolbar{min-height:52px;height:52px;flex-basis:52px}.code-sub{font-size:10px}.editor-status{padding:7px 10px}.editor-tab{padding:0 7px}.code-lines{font-size:10.5px}.line-no{width:39px;padding-right:10px;margin-right:10px}.code-readonly{display:none}}
+
 </style>
 </head>
 <body>
@@ -183,6 +257,7 @@ svg{display:block;flex-shrink:0}
     <div class="sidebar-actions">
       <button id="newChat" type="button" class="nav-action primary"><span data-icon="plus"></span> New chat</button>
       <button id="sidebarSearch" type="button" class="nav-action"><span data-icon="search"></span> Search archive</button>
+      <button id="sidebarCode" type="button" class="nav-action code-link"><span data-icon="code"></span> Code workspace</button>
       <button id="sidebarSettings" type="button" class="nav-action"><span data-icon="sliders"></span> Connection settings</button>
     </div>
     <div class="section-label">THIS SESSION</div>
@@ -203,22 +278,50 @@ svg{display:block;flex-shrink:0}
         <span class="top-version">ATLAS Agent</span>
       </div>
       <div class="top-right">
+        <div class="mode-switch" role="tablist" aria-label="Workspace view"><button id="chatTab" class="mode-tab active" type="button" role="tab" aria-selected="true"><span data-icon="message"></span><span>Chat</span></button><button id="codeTab" class="mode-tab" type="button" role="tab" aria-selected="false"><span data-icon="code"></span><span>Code</span></button></div>
         <button class="icon-btn" id="topSearch" type="button" title="Search reference archive" aria-label="Search reference archive"><span data-icon="search"></span></button>
         <button class="icon-btn" id="themeToggle" type="button" title="Toggle light and dark mode" aria-label="Toggle appearance"><span data-icon="moon" id="themeIcon"></span></button>
         <button class="icon-btn" id="topNewChat" type="button" title="New conversation" aria-label="New conversation"><span data-icon="square-pen"></span></button>
       </div>
     </header>
+    <section class="code-workspace" id="codeWorkspace" aria-label="ATLAS code workspace" hidden>
+      <div class="code-toolbar">
+        <div class="code-toolbar-left"><span class="repo-glyph"><span data-icon="code"></span></span><div><strong>ATLAS-AI</strong><div class="code-sub">gulfcoastorganics-ai / main · GitHub Pages sources</div></div></div>
+        <div class="code-toolbar-right"><span class="code-readonly">READ ONLY</span><a class="code-open-github" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">Open repository ↗</a></div>
+      </div>
+      <div class="code-layout">
+        <aside class="file-explorer" id="fileExplorer" aria-label="Repository files">
+          <div class="explorer-heading"><span>Explorer</span><span data-icon="code"></span></div>
+          <div id="fileTree" class="explorer-tree"></div>
+          <div class="explorer-note">Public repository files shown here. Open a file to inspect its source; ATLAS cannot modify or execute it.</div>
+        </aside>
+        <section class="editor-panel" aria-label="Read-only source viewer">
+          <div class="editor-tabs"><div class="editor-tab"><span data-icon="code"></span><span id="editorTabTitle">README.md</span></div><div class="editor-actions"><button class="icon-btn" id="copySource" type="button" title="Copy file contents" aria-label="Copy source"><span data-icon="copy"></span></button><a class="icon-btn" id="openSource" title="Open file on GitHub" aria-label="Open file on GitHub" target="_blank" rel="noopener noreferrer" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/README.md"><span data-icon="external"></span></a></div></div>
+          <div class="editor-status"><span id="editorPath">ATLAS-AI / README.md</span><span id="editorMeta">Loading…</span></div>
+          <div class="source-panel" id="sourcePanel"><div class="editor-empty">Select a file to view its source.</div></div>
+          <div class="editor-bottom"><span>Read-only source inspection · no code execution</span><button class="subtle-button" id="askAboutFile" type="button">Ask ATLAS about this file <span data-icon="external"></span></button></div>
+        </section>
+        <aside class="code-activity" aria-label="Agent activity and diagnostics">
+          <div class="activity-header">Agent activity</div><p class="activity-sub">Real tool calls from the current chat, not simulated executions.</p>
+          <div class="activity-list" id="activityList"><div class="activity-empty">No tool activity yet. Ask ATLAS to inspect the repository to see its read-only tool calls here.</div></div>
+          <div class="console-shell"><div class="console-heading">Command palette <span class="console-tag">browser commands only</span></div>
+            <div class="console-output" id="consoleOutput" aria-live="polite"><p class="console-entry">ATLAS Studio · safe read-only commands</p><p class="console-entry">Type help, ls, open README.md, health or clear.</p></div>
+            <form class="console-form" id="consoleForm"><b>›</b><input id="consoleInput" aria-label="Studio command" placeholder="help" autocomplete="off" spellcheck="false"></form>
+          </div>
+        </aside>
+      </div>
+    </section>
     <div class="content-scroll" id="chatScroll">
       <section id="welcome" class="welcome" aria-label="Welcome to ATLAS">
         <div class="hero-overline"><span class="hero-mark" data-icon="sparkles"></span><span>YOUR AI DEVELOPMENT PARTNER</span></div>
         <h1>What can I help you<br><em>build today?</em></h1>
-        <p class="welcome-description">An uncluttered space to explore ideas, understand code, and work with your repository and reference archive.</p>
+        <p class="welcome-description">A calm space for conversations, repository exploration, and transparent agent work—together in one studio.</p>
         <div class="quick-label">Start with an idea</div>
         <div class="prompts">
           <button class="prompt-card" type="button" data-prompt="Inspect the ATLAS-AI GitHub repository and summarize its architecture."><span data-icon="code"></span><span><strong>Explore my codebase</strong><small>Understand the structure of ATLAS AI</small></span></button>
           <button class="prompt-card" type="button" data-action="archive"><span data-icon="book"></span><span><strong>Search references</strong><small>Discover prompts, tools, and source excerpts</small></span></button>
           <button class="prompt-card" type="button" data-prompt="Review the ATLAS AI agent architecture and suggest the highest-impact improvements."><span data-icon="compass"></span><span><strong>Improve the agent</strong><small>Explore a practical development roadmap</small></span></button>
-          <button class="prompt-card" type="button" data-prompt="Explain what the ATLAS agent can currently do and which tools are enabled."><span data-icon="layers"></span><span><strong>Understand capabilities</strong><small>See what the current runtime supports</small></span></button>
+          <button class="prompt-card" type="button" data-action="code"><span data-icon="layers"></span><span><strong>Open Code Studio</strong><small>Browse repository files and agent activity</small></span></button>
         </div>
       </section>
       <div id="thread" class="thread" aria-live="polite" aria-relevant="additions text"></div>
@@ -324,8 +427,8 @@ $('mobileMenu').onclick=openSidebar;$('collapseSidebar').onclick=closeSidebar;$(
 function openInspector(){$('inspector').hidden=false;$('inspectorOverlay').classList.add('on');closeSidebar();setTimeout(()=>$('search').focus(),50);}
 function closeInspector(){$('inspector').hidden=true;$('inspectorOverlay').classList.remove('on');}
 $('sidebarSearch').onclick=openInspector;$('topSearch').onclick=openInspector;$('composerArchive').onclick=openInspector;$('closeInspector').onclick=closeInspector;$('inspectorOverlay').onclick=closeInspector;
-$('newChat').onclick=createSession;$('topNewChat').onclick=createSession;
-for(const b of document.querySelectorAll('.prompt-card')){b.onclick=()=>{if(b.dataset.action==='archive'){openInspector();return;}message.value=b.dataset.prompt||'';fitMessage();message.focus();};}
+$('newChat').onclick=()=>{createSession();switchWorkspace('chat');};$('topNewChat').onclick=()=>{createSession();switchWorkspace('chat');};
+for(const b of document.querySelectorAll('.prompt-card')){b.onclick=()=>{if(b.dataset.action==='archive'){openInspector();return;}if(b.dataset.action==='code'){switchWorkspace('code');return;}message.value=b.dataset.prompt||'';fitMessage();message.focus();};}
 let localReferenceIndex=null;
 async function localReferenceSearch(query){if(!localReferenceIndex){const response=await fetch('./reference-index.json',{cache:'default'});if(!response.ok)throw Error('Reference index not available on GitHub Pages');localReferenceIndex=await response.json();}const keys=Array.from(new Set((query.toLowerCase().match(/[a-z][a-z0-9_-]{2,}/g)||[]))).slice(0,12);const ranked=[];for(const c of localReferenceIndex.chunks){let score=0;const name=c.path.toLowerCase();for(const k of keys){if(c.terms.includes(k))score+=3;if(name.includes(k))score+=6;}if(score>0)ranked.push({...c,score});}ranked.sort((a,b)=>b.score-a.score);const seen=new Set(),matches=[];for(const item of ranked){if(seen.has(item.path))continue;seen.add(item.path);matches.push(item);if(matches.length>=10)break;}return {matches,totalFiles:localReferenceIndex.files.length,totalChunks:localReferenceIndex.chunks.length,local:true};}
 $('searchForm').onsubmit=async e=>{e.preventDefault();const value=$('search').value.trim();if(!value)return;const out=$('results');out.textContent='Searching archive…';$('searchBtn').disabled=true;try{let res;try{if(!access.value)throw Error('No access key entered');res=await api('/search',{query:value});}catch{res=await localReferenceSearch(value);}out.textContent='';const count=document.createElement('div');count.className='results-count';count.textContent=res.matches.length+' matches · '+res.totalFiles+' files'+(res.local?' · GitHub Pages':'');out.append(count);for(const m of res.matches){const card=document.createElement('div');card.className='result';const a=document.createElement('a');a.href='https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/external/CL4R1T4S/'+m.path.split('/').map(encodeURIComponent).join('/');a.textContent=m.path+' ↗';a.target='_blank';a.rel='noopener noreferrer';const p=document.createElement('p');p.textContent=m.snippet||'No preview available';card.append(a,p);out.append(card);}if(!res.matches.length)out.textContent='No matches found. Try different keywords.';}catch(err){out.textContent='Search failed: '+err.message;}finally{$('searchBtn').disabled=false;}};
@@ -333,7 +436,131 @@ function fitMessage(){message.style.height='auto';message.style.height=Math.min(
 message.addEventListener('input',fitMessage);
 message.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('composer').requestSubmit();}});
 $('composer').onsubmit=async e=>{e.preventDefault();const text=message.value.trim();if(!text||requestPending)return;if(mode.value==='live'&&!access.value.trim()){toast('Enter your ATLAS access key in settings first');openSettings();return;}
- const s=currentSession();message.value='';fitMessage();s.history.push({role:'user',content:text});s.transcript.push({role:'user',text});if(s.title==='New conversation')s.title=text.slice(0,44)+(text.length>44?'…':'');renderSessions();renderThread();requestPending=true;pendingSession=s.id;send.disabled=true;renderThread();try{let response;if(mode.value==='demo'){response={reply:'This is a visual demonstration. Select Live Cloudflare Workers AI in settings and provide your ATLAS access key to talk to the deployed agent.',trace:[]};}else{response=await api('/chat',{messages:s.history.slice(-12)});}const content=response.reply||'No answer returned.';s.history.push({role:'assistant',content});s.transcript.push({role:'assistant',text:content,trace:response.trace||[]});}catch(err){s.history.pop();s.transcript.push({role:'assistant',text:'Request failed: '+err.message,error:true});}finally{requestPending=false;pendingSession=null;send.disabled=false;if(activeId===s.id)renderThread();message.focus();}};
+ const s=currentSession();message.value='';fitMessage();s.history.push({role:'user',content:text});s.transcript.push({role:'user',text});if(s.title==='New conversation')s.title=text.slice(0,44)+(text.length>44?'…':'');renderSessions();renderThread();requestPending=true;pendingSession=s.id;send.disabled=true;renderThread();try{let response;if(mode.value==='demo'){response={reply:'This is a visual demonstration. Select Live Cloudflare Workers AI in settings and provide your ATLAS access key to talk to the deployed agent.',trace:[]};}else{response=await api('/chat',{messages:s.history.slice(-12)});}const content=response.reply||'No answer returned.';s.history.push({role:'assistant',content});s.transcript.push({role:'assistant',text:content,trace:response.trace||[]});}catch(err){s.history.pop();s.transcript.push({role:'assistant',text:'Request failed: '+err.message,error:true});}finally{requestPending=false;pendingSession=null;send.disabled=false;if(activeId===s.id)renderThread();renderActivity();message.focus();}};
+
+// ATLAS Studio — repository exploration stays read-only; no sandbox, shell or write API is implied.
+const REPO_ROOT='https://github.com/gulfcoastorganics-ai/ATLAS-AI';
+const REPO_SOURCE=[
+  {section:'Essentials',files:['README.md','index.html','worker.js','wrangler.toml','package.json','UPSTREAM_SOURCE.md']},
+  {section:'Tests & tooling',files:['tests/worker.test.mjs','scripts/build_reference_index.py','.github/workflows/deploy-worker.yml','.github/workflows/validate-agent.yml']}
+];
+const ALLOWED_FILES=new Set(REPO_SOURCE.flatMap(group=>group.files));
+let activeWorkspace='chat',selectedSource='README.md',sourceText='',sourceLoadId=0;
+const sourceCache=new Map();
+function repoUrl(path){return REPO_ROOT+'/blob/main/'+path.split('/').map(encodeURIComponent).join('/');}
+function switchWorkspace(next){
+  activeWorkspace=next==='code'?'code':'chat';
+  const code=activeWorkspace==='code';
+  $('codeWorkspace').hidden=!code;
+  document.querySelector('.workspace').classList.toggle('code-active',code);
+  $('chatTab').classList.toggle('active',!code);$('chatTab').setAttribute('aria-selected',String(!code));
+  $('codeTab').classList.toggle('active',code);$('codeTab').setAttribute('aria-selected',String(code));
+  $('sidebarCode').classList.toggle('active',code);
+  if(code){renderFileTree();renderActivity();if(!sourceCache.has(selectedSource))viewSource(selectedSource);else renderSource(selectedSource,sourceCache.get(selectedSource));}
+  closeSidebar();
+}
+$('chatTab').onclick=()=>switchWorkspace('chat');
+$('codeTab').onclick=()=>switchWorkspace('code');
+$('sidebarCode').onclick=()=>switchWorkspace('code');
+function renderFileTree(){
+  const root=$('fileTree');root.textContent='';
+  for(const group of REPO_SOURCE){
+    const heading=document.createElement('div');heading.className='file-group';heading.textContent=group.section;root.append(heading);
+    for(const path of group.files){
+      const b=document.createElement('button');b.type='button';b.className='file-item'+(path===selectedSource?' selected':'');
+      b.innerHTML=svg(path.endsWith('.md')?'book':'code','icon sm');
+      const label=document.createElement('span');label.textContent=path.split('/').pop();b.append(label);
+      b.title=path;b.onclick=()=>viewSource(path);root.append(b);
+    }
+  }
+}
+async function viewSource(path){
+  if(!ALLOWED_FILES.has(path))throw Error('File is not in the public source explorer');
+  selectedSource=path;renderFileTree();$('editorTabTitle').textContent=path.split('/').pop();
+  $('editorPath').textContent='ATLAS-AI / '+path;
+  $('openSource').href=repoUrl(path);
+  $('editorMeta').textContent='Loading source…';$('sourcePanel').textContent='';const loading=document.createElement('div');loading.className='editor-empty';loading.textContent='Loading public source…';$('sourcePanel').append(loading);
+  const loadId=++sourceLoadId;
+  if(sourceCache.has(path)){renderSource(path,sourceCache.get(path));return;}
+  let content;
+  try{
+    const encoded=path.split('/').map(encodeURIComponent).join('/');
+    const candidates=['./'+encoded,'https://raw.githubusercontent.com/gulfcoastorganics-ai/ATLAS-AI/main/'+encoded];
+    for(const url of candidates){
+      try{
+        const response=await fetch(url,{cache:'default'});
+        if(!response.ok)continue;
+        const length=Number(response.headers.get('content-length'));
+        if(length>300000)throw Error('File is too large for inline preview; open in GitHub.');
+        const body=await response.text();
+        if(body.length>300000)throw Error('File is too large for inline preview; open in GitHub.');
+        if(body.trimStart().startsWith('<!doctype html')&&path!=='index.html')continue;
+        content=body;break;
+      }catch(err){if(String(err.message).includes('too large'))throw err;}
+    }
+    if(typeof content!=='string')throw Error('Source unavailable. Use Open on GitHub to view it.');
+    sourceCache.set(path,content);
+    if(sourceLoadId===loadId&&selectedSource===path)renderSource(path,content);
+  }catch(err){
+    if(sourceLoadId!==loadId)return;
+    sourceText='';$('editorMeta').textContent='Source unavailable';
+    const e=document.createElement('div');e.className='editor-empty';e.textContent=err.message+'\n\nThis is a public, read-only viewer. You can still open the file on GitHub.';
+    $('sourcePanel').replaceChildren(e);
+  }
+}
+function renderSource(path,body){
+  sourceText=body;const panel=$('sourcePanel');panel.textContent='';
+  const block=document.createElement('pre');block.className='code-lines';
+  const lines=body.split('\n');
+  for(let i=0;i<lines.length;i++){
+    const row=document.createElement('span');row.className='code-line';
+    const line=lines[i];if(/^\s*(?:\/\/|\/\*|\*|#|<!--)/.test(line))row.classList.add('comment');
+    else if(/^\s*(?:const|let|function|async|export|import|class|def|return|if|from|name\s*=)/.test(line))row.classList.add('keyword');
+    else if(/^\s*(?:<{1}[a-zA-Z]|\[)/.test(line))row.classList.add('title-line');
+    const no=document.createElement('span');no.className='line-no';no.textContent=String(i+1);
+    const code=document.createElement('span');code.className='code-text';code.textContent=line||' ';
+    row.append(no,code);block.append(row);
+  }
+  panel.append(block);panel.scrollTop=0;panel.scrollLeft=0;
+  $('editorMeta').textContent=lines.length.toLocaleString()+' lines · '+(new Blob([body]).size/1024).toFixed(1)+' KB';
+}
+$('copySource').onclick=()=>{if(sourceText)copyText(sourceText);else toast('Open a source file first');};
+$('askAboutFile').onclick=()=>{
+  const path=selectedSource;
+  switchWorkspace('chat');
+  message.value='Use github_read on '+path+' and explain its purpose, main components, and practical improvements. Do not modify the repository.';
+  fitMessage();message.focus();toast('Prompt prepared · press Send when ready');
+};
+function renderActivity(){
+  const root=$('activityList');root.textContent='';const s=currentSession();
+  const items=(s?.transcript||[]).flatMap(m=>m.trace||[]).slice(-16).reverse();
+  if(!items.length){const div=document.createElement('div');div.className='activity-empty';div.textContent='No tool activity yet. Chat with ATLAS and ask it to inspect repository files. Tool calls will appear here.';root.append(div);return;}
+  for(const event of items){
+    const row=document.createElement('div');row.className='activity-record';row.innerHTML=svg(event.status==='error'?'x':'layers','icon');
+    const body=document.createElement('div');const title=document.createElement('strong');title.textContent=event.tool||'Agent event';
+    const detail=document.createElement('small');detail.textContent=event.error||event.status||(event.sources?.join(', '))||'Reference data loaded';
+    body.append(title,detail);row.append(body);root.append(row);
+  }
+}
+function consoleLine(content,kind=''){const p=document.createElement('p');p.className='console-entry '+kind;p.textContent=content;$('consoleOutput').append(p);$('consoleOutput').scrollTop=$('consoleOutput').scrollHeight;}
+$('consoleForm').onsubmit=async event=>{
+  event.preventDefault();const field=$('consoleInput'),input=field.value.trim();field.value='';if(!input)return;
+  const [cmd,...args]=input.split(/\s+/);consoleLine('› '+input,'command');
+  switch(cmd.toLowerCase()){
+    case 'help':consoleLine('help, ls, open <file>, health, clear\nThese are browser-only read-only commands, not a shell.');break;
+    case 'ls':consoleLine(REPO_SOURCE.flatMap(g=>g.files).join('   '));break;
+    case 'open':{const path=args.join(' ');if(ALLOWED_FILES.has(path)){viewSource(path);consoleLine('Opened '+path);}else consoleLine('Unknown file. Run ls for the supported files.');break;}
+    case 'health':try{const resp=await fetch(workerUrl()+'/health');if(!resp.ok)throw Error('HTTP '+resp.status);const j=await resp.json();consoleLine('ATLAS Worker v'+j.version+' · AI '+(j.aiConfigured?'bound':'missing')+' · '+(j.writesEnabled?'writes enabled':'read-only'));}catch(e){consoleLine('Health check failed: '+e.message);}break;
+    case 'clear':$('consoleOutput').textContent='';break;
+    default:consoleLine('Unknown command. Type help for available read-only commands.');
+  }
+};
+window.addEventListener('keydown',event=>{
+  if((event.ctrlKey||event.metaKey)&&!event.altKey&&(event.key==='1'||event.key==='2')){
+    event.preventDefault();switchWorkspace(event.key==='1'?'chat':'code');
+  }
+});
+
 // Chats are session-only. Credentials are never persisted or included in page navigation.
 createSession();
 </script>
