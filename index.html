@@ -241,11 +241,77 @@ svg{display:block;flex-shrink:0}
 @media(max-width:830px){.mode-switch{margin-right:0}.code-toolbar{padding:0 14px}.code-open-github{display:none}}
 @media(max-width:640px){.top-right{gap:0}.mode-tab{padding:7px 9px}.mode-tab >span:not([data-icon]){display:none}.code-layout{grid-template-columns:1fr;grid-template-rows:160px minmax(0,1fr)}.file-explorer{border-right:0;border-bottom:1px solid var(--line)}.explorer-heading{padding:9px 14px 3px}.explorer-tree{display:flex;flex-wrap:wrap;align-content:flex-start;gap:2px;padding:4px 8px;overflow:auto}.file-group{width:100%;padding:5px 8px 2px}.file-item{width:auto;max-width:45vw;padding:7px 9px;font-size:10.5px}.explorer-note{display:none}.code-toolbar{min-height:52px;height:52px;flex-basis:52px}.code-sub{font-size:10px}.editor-status{padding:7px 10px}.editor-tab{padding:0 7px}.code-lines{font-size:10.5px}.line-no{width:39px;padding-right:10px;margin-right:10px}.code-readonly{display:none}}
 
+
+/* ATLAS Studio audit v0.4: navigable file explorer and real in-context assistant. */
+.file-filter{display:flex;align-items:center;gap:8px;margin:3px 10px 8px;padding:0 10px;min-height:37px;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+.file-filter .icon{width:15px;height:15px;color:var(--muted)}
+.file-filter:focus-within{border-color:var(--accent)}
+.file-filter input{width:100%;min-width:0;border:0;background:none;outline:0;color:var(--text);font-size:12px}
+.file-empty{font-size:12px;padding:15px;color:var(--muted);line-height:1.6}
+.code-open-github .icon{width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:5px}
+.code-toolbar button.code-open-github{cursor:pointer;font-family:inherit}
+.editor-bottom-actions{display:flex;align-items:center;gap:6px;min-width:0}
+.editor-bottom-actions label{color:var(--muted);font-size:11px}
+.editor-bottom-actions input{width:55px;border:1px solid var(--line);border-radius:7px;padding:5px;background:var(--bg);color:var(--text);font-size:11px}
+.editor-bottom-actions .subtle-button{font-size:11px;padding:7px 8px}
+.source-panel.wrapped .code-lines{min-width:0;white-space:pre-wrap;width:100%}
+.source-panel.wrapped .code-line{width:100%;min-width:0}
+.source-panel.wrapped .code-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.code-line.line-highlight{background:rgba(233,172,111,.21)}
+.code-side-heading{padding:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px}
+.code-side-tabs{display:flex;align-items:center;padding:3px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;gap:4px}
+.code-side-tabs button{border:0;background:transparent;color:var(--muted);border-radius:7px;padding:8px;flex:1;font-size:12px;font-weight:650}
+.code-side-tabs button.selected{color:var(--text-strong);background:var(--paper);box-shadow:var(--shadow)}
+.code-panel-close{display:none}
+.code-assistant-view,.code-activity-view{flex:1;min-height:0;display:flex;flex-direction:column}
+.assistant-context{padding:13px 14px;background:var(--soft);border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.assistant-context strong{color:var(--text-strong)}
+.assistant-context small{display:block;padding-top:5px;font-size:10px;line-height:1.5}
+.context-dot{display:inline-block;background:var(--accent);width:6px;height:6px;border-radius:50%;margin-right:5px}
+.code-assistant-messages{flex:1;overflow-y:auto;padding:16px 13px;min-height:0;display:flex;flex-direction:column;gap:13px}
+.code-assistant-empty{padding:20px 13px;color:var(--muted);border:1px dashed var(--line);border-radius:12px;line-height:1.7;font-size:12px}
+.code-ai-message{font-size:12px;line-height:1.65;overflow-wrap:anywhere}
+.code-ai-message strong{display:block;margin-bottom:4px;color:var(--text-strong);font-size:11px}
+.code-ai-message p{white-space:pre-wrap;margin:0}
+.code-ai-message.user{background:var(--soft);padding:11px;border-radius:11px}
+.code-ai-message.pending{color:var(--muted);font-style:italic}
+.code-ai-message.error{color:#bf5d49}
+.code-quick-actions{display:flex;gap:5px;padding:10px 12px 0;border-top:1px solid var(--line)}
+.code-quick-question{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:99px;padding:7px 10px;font-size:11px}
+.code-quick-question:hover{border-color:var(--accent);color:var(--text)}
+.code-assistant-compose{padding:12px;display:flex;flex-direction:column;gap:8px}
+.code-assistant-compose label{font-size:11px;color:var(--muted);font-weight:650}
+.code-assistant-compose textarea{resize:vertical;min-height:67px;max-height:145px;width:100%;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--text);padding:10px;font-size:12px;line-height:1.5}
+.code-assistant-compose textarea:focus-visible{border-color:var(--accent)}
+.code-assistant-compose .action-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:37px}
+.code-assistant-compose .action-btn .icon{width:15px;height:15px}
+.code-layout.pane-closed{grid-template-columns:222px minmax(0,1fr)}
+.code-layout.pane-closed .code-activity{display:none!important}
+.code-pane-overlay{z-index:52}
+@media(max-width:1240px){
+  .code-activity{position:fixed;right:0;top:0;height:100dvh;width:min(380px,95vw);z-index:53;box-shadow:-10px 0 40px rgba(0,0,0,.16);display:none}
+  .code-activity.on{display:flex}
+  .code-panel-close{display:flex}
+  .code-layout.pane-closed{grid-template-columns:200px minmax(0,1fr)}
+}
+@media(max-width:640px){
+  .file-filter{margin:4px 10px;min-height:31px}
+  .file-filter input{font-size:11px}
+  .code-layout.pane-closed{grid-template-columns:1fr;grid-template-rows:160px minmax(0,1fr)}
+  .file-explorer{min-height:0}
+  .editor-bottom{flex-wrap:wrap;justify-content:center;padding:7px;min-height:52px}
+  .editor-bottom>span{display:none}
+  .editor-bottom-actions{width:100%;justify-content:space-around}
+  .code-toolbar-right{gap:4px}
+  .code-toolbar button.code-open-github{display:inline-flex;align-items:center}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
   <div class="overlay sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+  <div class="overlay code-pane-overlay" id="codePaneOverlay" aria-hidden="true"></div>
   <aside class="sidebar" id="sidebar" aria-label="ATLAS navigation">
     <div class="sidebar-top">
       <a class="brand" href="./" aria-label="ATLAS home">
@@ -259,6 +325,7 @@ svg{display:block;flex-shrink:0}
       <button id="sidebarSearch" type="button" class="nav-action"><span data-icon="search"></span> Search archive</button>
       <button id="sidebarCode" type="button" class="nav-action code-link"><span data-icon="code"></span> Code workspace</button>
       <button id="sidebarSettings" type="button" class="nav-action"><span data-icon="sliders"></span> Connection settings</button>
+      <button id="exportChat" type="button" class="nav-action"><span data-icon="copy"></span> Export conversation</button>
     </div>
     <div class="section-label">THIS SESSION</div>
     <div id="sessionList" class="sessions" aria-label="Conversations in this tab"></div>
@@ -278,40 +345,50 @@ svg{display:block;flex-shrink:0}
         <span class="top-version">ATLAS Agent</span>
       </div>
       <div class="top-right">
-        <div class="mode-switch" role="tablist" aria-label="Workspace view"><button id="chatTab" class="mode-tab active" type="button" role="tab" aria-selected="true"><span data-icon="message"></span><span>Chat</span></button><button id="codeTab" class="mode-tab" type="button" role="tab" aria-selected="false"><span data-icon="code"></span><span>Code</span></button></div>
+        <div class="mode-switch" role="tablist" aria-label="Workspace view"><button id="chatTab" class="mode-tab active" type="button" role="tab" aria-selected="true" aria-controls="chatScroll" tabindex="0"><span data-icon="message"></span><span>Chat</span></button><button id="codeTab" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="codeWorkspace" tabindex="-1"><span data-icon="code"></span><span>Code</span></button></div>
         <button class="icon-btn" id="topSearch" type="button" title="Search reference archive" aria-label="Search reference archive"><span data-icon="search"></span></button>
         <button class="icon-btn" id="themeToggle" type="button" title="Toggle light and dark mode" aria-label="Toggle appearance"><span data-icon="moon" id="themeIcon"></span></button>
         <button class="icon-btn" id="topNewChat" type="button" title="New conversation" aria-label="New conversation"><span data-icon="square-pen"></span></button>
       </div>
     </header>
-    <section class="code-workspace" id="codeWorkspace" aria-label="ATLAS code workspace" hidden>
+    <section class="code-workspace" id="codeWorkspace" role="tabpanel" aria-labelledby="codeTab" aria-label="ATLAS code workspace" hidden>
       <div class="code-toolbar">
         <div class="code-toolbar-left"><span class="repo-glyph"><span data-icon="code"></span></span><div><strong>ATLAS-AI</strong><div class="code-sub">gulfcoastorganics-ai / main · GitHub Pages sources</div></div></div>
-        <div class="code-toolbar-right"><span class="code-readonly">READ ONLY</span><a class="code-open-github" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">Open repository ↗</a></div>
+        <div class="code-toolbar-right"><span class="code-readonly">READ ONLY</span><button class="code-open-github" id="toggleCodeAssistant" type="button" aria-controls="codeSidePane" aria-expanded="true"><span data-icon="message"></span> Assistant</button><a class="code-open-github" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI" target="_blank" rel="noopener noreferrer">Open repository ↗</a></div>
       </div>
       <div class="code-layout">
         <aside class="file-explorer" id="fileExplorer" aria-label="Repository files">
-          <div class="explorer-heading"><span>Explorer</span><span data-icon="code"></span></div>
+          <div class="explorer-heading"><span>Explorer</span><span id="fileCount">10 files</span></div>
+          <div class="file-filter"><span data-icon="search"></span><input id="fileFilter" type="search" autocomplete="off" placeholder="Find a file…" aria-label="Filter repository files" aria-controls="fileTree"></div>
           <div id="fileTree" class="explorer-tree"></div>
           <div class="explorer-note">Public repository files shown here. Open a file to inspect its source; ATLAS cannot modify or execute it.</div>
         </aside>
         <section class="editor-panel" aria-label="Read-only source viewer">
-          <div class="editor-tabs"><div class="editor-tab"><span data-icon="code"></span><span id="editorTabTitle">README.md</span></div><div class="editor-actions"><button class="icon-btn" id="copySource" type="button" title="Copy file contents" aria-label="Copy source"><span data-icon="copy"></span></button><a class="icon-btn" id="openSource" title="Open file on GitHub" aria-label="Open file on GitHub" target="_blank" rel="noopener noreferrer" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/README.md"><span data-icon="external"></span></a></div></div>
+          <div class="editor-tabs"><div class="editor-tab"><span data-icon="code"></span><span id="editorTabTitle">README.md</span></div><div class="editor-actions"><button class="icon-btn" id="refreshSource" type="button" title="Refresh source from GitHub Pages" aria-label="Refresh source"><span data-icon="refresh"></span></button><button class="icon-btn" id="wrapSource" type="button" aria-pressed="false" title="Toggle line wrapping" aria-label="Toggle source line wrapping"><span data-icon="wrap"></span></button><button class="icon-btn" id="copySource" type="button" title="Copy file contents" aria-label="Copy source"><span data-icon="copy"></span></button><a class="icon-btn" id="openSource" title="Open file on GitHub" aria-label="Open file on GitHub" target="_blank" rel="noopener noreferrer" href="https://github.com/gulfcoastorganics-ai/ATLAS-AI/blob/main/README.md"><span data-icon="external"></span></a></div></div>
           <div class="editor-status"><span id="editorPath">ATLAS-AI / README.md</span><span id="editorMeta">Loading…</span></div>
           <div class="source-panel" id="sourcePanel"><div class="editor-empty">Select a file to view its source.</div></div>
-          <div class="editor-bottom"><span>Read-only source inspection · no code execution</span><button class="subtle-button" id="askAboutFile" type="button">Ask ATLAS about this file <span data-icon="external"></span></button></div>
+          <div class="editor-bottom"><span>Read-only · no code execution</span><div class="editor-bottom-actions"><label for="jumpLine">Line</label><input id="jumpLine" type="number" min="1" value="1" aria-label="Jump to source line"><button class="subtle-button" id="jumpButton" type="button">Go</button><button class="subtle-button" id="askAboutFile" type="button"><span data-icon="message"></span> Ask about file</button></div></div>
         </section>
-        <aside class="code-activity" aria-label="Agent activity and diagnostics">
-          <div class="activity-header">Agent activity</div><p class="activity-sub">Real tool calls from the current chat, not simulated executions.</p>
-          <div class="activity-list" id="activityList"><div class="activity-empty">No tool activity yet. Ask ATLAS to inspect the repository to see its read-only tool calls here.</div></div>
-          <div class="console-shell"><div class="console-heading">Command palette <span class="console-tag">browser commands only</span></div>
-            <div class="console-output" id="consoleOutput" aria-live="polite"><p class="console-entry">ATLAS Studio · safe read-only commands</p><p class="console-entry">Type help, ls, open README.md, health or clear.</p></div>
-            <form class="console-form" id="consoleForm"><b>›</b><input id="consoleInput" aria-label="Studio command" placeholder="help" autocomplete="off" spellcheck="false"></form>
-          </div>
+        <aside class="code-activity" id="codeSidePane" aria-label="Code assistant and agent activity">
+          <div class="code-side-heading"><div class="code-side-tabs" role="tablist" aria-label="Code side panels"><button id="assistantSideTab" type="button" role="tab" aria-selected="true" aria-controls="codeAssistantView" class="selected">Assistant</button><button id="activitySideTab" type="button" role="tab" aria-selected="false" aria-controls="codeActivityView">Activity</button></div><button class="icon-btn code-panel-close" id="closeCodePane" type="button" aria-label="Close assistant panel"><span data-icon="x"></span></button></div>
+          <section class="code-assistant-view" id="codeAssistantView" role="tabpanel" aria-labelledby="assistantSideTab">
+            <div class="assistant-context"><span class="context-dot"></span> Reading <strong id="codeContextPath">README.md</strong><small>ATLAS can inspect selected repository files. It cannot modify them.</small></div>
+            <div id="codeAssistantMessages" class="code-assistant-messages" role="log" aria-label="Code assistant conversation" aria-live="polite"></div>
+            <div class="code-quick-actions"><button type="button" class="code-quick-question" data-question="Explain this file and its responsibilities.">Explain</button><button type="button" class="code-quick-question" data-question="Audit this file for bugs, security issues, and usability problems.">Audit</button><button type="button" class="code-quick-question" data-question="Suggest specific refactoring and performance improvements for this file.">Improve</button></div>
+            <form id="codeAskForm" class="code-assistant-compose"><label for="codeQuestion">Ask about selected file</label><textarea id="codeQuestion" rows="3" maxlength="1600" placeholder="What should I improve in this file?" aria-label="Question about selected file"></textarea><button id="codeAskSend" class="action-btn" type="submit"><span data-icon="arrow-up"></span> Ask ATLAS</button></form>
+          </section>
+          <section class="code-activity-view" id="codeActivityView" role="tabpanel" aria-labelledby="activitySideTab" hidden>
+            <div class="activity-header">Agent activity</div><p class="activity-sub">Real tool calls from the current chat, not simulated executions.</p>
+            <div class="activity-list" id="activityList"><div class="activity-empty">No tool activity yet. Ask ATLAS to inspect the repository to see its read-only tool calls here.</div></div>
+            <div class="console-shell"><div class="console-heading">Command palette <span class="console-tag">browser commands only</span></div>
+              <div class="console-output" id="consoleOutput" aria-live="polite"><p class="console-entry">ATLAS Studio · safe read-only commands</p><p class="console-entry">Type help, ls, open README.md, health or clear.</p></div>
+              <form class="console-form" id="consoleForm"><b>›</b><input id="consoleInput" aria-label="Studio command" placeholder="help" autocomplete="off" spellcheck="false"></form>
+            </div>
+          </section>
         </aside>
       </div>
     </section>
-    <div class="content-scroll" id="chatScroll">
+    <div class="content-scroll" id="chatScroll" role="tabpanel" aria-labelledby="chatTab">
       <section id="welcome" class="welcome" aria-label="Welcome to ATLAS">
         <div class="hero-overline"><span class="hero-mark" data-icon="sparkles"></span><span>YOUR AI DEVELOPMENT PARTNER</span></div>
         <h1>What can I help you<br><em>build today?</em></h1>
@@ -384,6 +461,8 @@ const ICONS = {
   "arrow-up":'<path d="M12 19V5m-6 6 6-6 6 6"/>',
   "x":'<path d="M18 6 6 18M6 6l12 12"/>',
   "copy":'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  "refresh":'<path d="M3 12a9 9 0 0 1 15.4-6.4L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.4 6.4L3 16m0 5v-5h5"/>',
+  "wrap":'<path d="M4 7h16M4 11h12a3 3 0 0 1 0 6H9m3-3-3 3 3 3M4 17h2"/>',
   "message":'<path d="M20 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 20l.9-4.5a9 9 0 1 1 16.1-4Z"/>'
 };
 function svg(name, cls='icon') {return '<svg class="'+cls+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(ICONS[name]||ICONS.sparkles)+'</svg>';}
@@ -400,8 +479,8 @@ setTheme(theme);
 $('themeToggle').onclick=()=>setTheme(theme==='light'?'dark':'light');
 let sessions=[],activeId=null,requestPending=false,pendingSession=null,toastTimer=null;
 function currentSession(){return sessions.find(s=>s.id===activeId);}
-function createSession(){const session={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),title:'New conversation',history:[],transcript:[]};sessions.unshift(session);sessions=sessions.slice(0,12);activeId=session.id;renderSessions();renderThread();closeSidebar();return session;}
-function renderSessions(){const root=$('sessionList');root.textContent='';sessions.forEach(s=>{const b=document.createElement('button');b.type='button';b.className='session-btn'+(s.id===activeId?' active':'');b.innerHTML=svg('message','icon sm');const title=document.createElement('span');title.textContent=s.title;b.append(title);b.onclick=()=>{activeId=s.id;renderSessions();renderThread();closeSidebar();};root.append(b);});}
+function createSession(){const session={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),title:'New conversation',history:[],transcript:[]};sessions.unshift(session);sessions=sessions.slice(0,12);activeId=session.id;renderSessions();renderThread();renderCodeAssistant();closeSidebar();return session;}
+function renderSessions(){const root=$('sessionList');root.textContent='';sessions.forEach(s=>{const b=document.createElement('button');b.type='button';b.className='session-btn'+(s.id===activeId?' active':'');b.innerHTML=svg('message','icon sm');const title=document.createElement('span');title.textContent=s.title;b.append(title);b.onclick=()=>{activeId=s.id;renderSessions();renderThread();renderCodeAssistant();renderActivity();closeSidebar();};root.append(b);});}
 function renderThread(){const s=currentSession();if(!s)return;thread.textContent='';$('welcome').hidden=s.transcript.length>0;$('conversationTitle').textContent=s.title;s.transcript.forEach(m=>appendMessage(m));if(requestPending&&pendingSession===s.id)appendThinking();if(s.transcript.length)scrollBottom();else $('chatScroll').scrollTop=0;}
 function scrollBottom(){requestAnimationFrame(()=>{$('chatScroll').scrollTop=$('chatScroll').scrollHeight;});}
 function appendMessage(data){const article=document.createElement('article');article.className='message '+data.role+(data.error?' error':'');if(data.role==='assistant'){const avatar=document.createElement('div');avatar.className='avatar';avatar.innerHTML=svg('sparkles');article.append(avatar);}
@@ -435,8 +514,49 @@ $('searchForm').onsubmit=async e=>{e.preventDefault();const value=$('search').va
 function fitMessage(){message.style.height='auto';message.style.height=Math.min(message.scrollHeight,180)+'px';}
 message.addEventListener('input',fitMessage);
 message.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('composer').requestSubmit();}});
-$('composer').onsubmit=async e=>{e.preventDefault();const text=message.value.trim();if(!text||requestPending)return;if(mode.value==='live'&&!access.value.trim()){toast('Enter your ATLAS access key in settings first');openSettings();return;}
- const s=currentSession();message.value='';fitMessage();s.history.push({role:'user',content:text});s.transcript.push({role:'user',text});if(s.title==='New conversation')s.title=text.slice(0,44)+(text.length>44?'…':'');renderSessions();renderThread();requestPending=true;pendingSession=s.id;send.disabled=true;renderThread();try{let response;if(mode.value==='demo'){response={reply:'This is a visual demonstration. Select Live Cloudflare Workers AI in settings and provide your ATLAS access key to talk to the deployed agent.',trace:[]};}else{response=await api('/chat',{messages:s.history.slice(-12)});}const content=response.reply||'No answer returned.';s.history.push({role:'assistant',content});s.transcript.push({role:'assistant',text:content,trace:response.trace||[]});}catch(err){s.history.pop();s.transcript.push({role:'assistant',text:'Request failed: '+err.message,error:true});}finally{requestPending=false;pendingSession=null;send.disabled=false;if(activeId===s.id)renderThread();renderActivity();message.focus();}};
+async function submitAtlasMessage(displayText, filePath=null){
+  const text=String(displayText||'').trim();
+  if(!text||requestPending)return false;
+  if(mode.value==='live'&&!access.value.trim()){
+    toast('Enter your ATLAS access key in settings first');openSettings();return false;
+  }
+  const s=currentSession();
+  if(!s)return false;
+  const prompt=filePath
+    ?'Use github_read with path '+filePath+' to inspect the actual source. The file is read-only. User question: '+text
+    :text;
+  s.history.push({role:'user',content:prompt});
+  s.transcript.push({role:'user',text:filePath?'['+filePath+'] '+text:text});
+  if(s.title==='New conversation')s.title=text.slice(0,44)+(text.length>44?'…':'');
+  requestPending=true;pendingSession=s.id;
+  // Clear only the submitted field as soon as the request is accepted. Preserve any new draft typed while inference runs.
+  if(filePath){$('codeQuestion').value='';}else{message.value='';fitMessage();}
+  send.disabled=true;$('codeAskSend').disabled=true;
+  renderSessions();renderThread();renderCodeAssistant();renderActivity();
+  try{
+    const response=mode.value==='demo'
+      ?{reply:'This is a visual demonstration. Select Live Workers AI in settings and supply your access key to run the actual read-only GitHub tools.',trace:[]}
+      :await api('/chat',{messages:s.history.slice(-12)});
+    const content=response.reply||'No answer returned.';
+    s.history.push({role:'assistant',content});
+    s.transcript.push({role:'assistant',text:content,trace:response.trace||[]});
+  }catch(err){
+    s.history.pop();
+    s.transcript.push({role:'assistant',text:'Request failed: '+err.message,error:true});
+  }finally{
+    requestPending=false;pendingSession=null;send.disabled=false;$('codeAskSend').disabled=false;
+    renderSessions();if(activeId===s.id){renderThread();renderCodeAssistant();renderActivity();}
+  }
+  return true;
+}
+$('composer').onsubmit=async e=>{
+  e.preventDefault();const text=message.value.trim();
+  if(await submitAtlasMessage(text)&&activeWorkspace==='chat')message.focus();
+};
+$('codeAskForm').onsubmit=async e=>{
+  e.preventDefault();const text=$('codeQuestion').value.trim();
+  if(await submitAtlasMessage(text,selectedSource)&&activeWorkspace==='code')$('codeQuestion').focus();
+};
 
 // ATLAS Studio — repository exploration stays read-only; no sandbox, shell or write API is implied.
 const REPO_ROOT='https://github.com/gulfcoastorganics-ai/ATLAS-AI';
@@ -455,32 +575,46 @@ function switchWorkspace(next){
   document.querySelector('.workspace').classList.toggle('code-active',code);
   $('chatTab').classList.toggle('active',!code);$('chatTab').setAttribute('aria-selected',String(!code));
   $('codeTab').classList.toggle('active',code);$('codeTab').setAttribute('aria-selected',String(code));
+  $('chatTab').tabIndex=code?-1:0;$('codeTab').tabIndex=code?0:-1;
   $('sidebarCode').classList.toggle('active',code);
-  if(code){renderFileTree();renderActivity();if(!sourceCache.has(selectedSource))viewSource(selectedSource);else renderSource(selectedSource,sourceCache.get(selectedSource));}
+  if(code){renderFileTree();renderActivity();renderCodeAssistant();if(!sourceCache.has(selectedSource))viewSource(selectedSource);else renderSource(selectedSource,sourceCache.get(selectedSource));}
+  else closeCodePane();
   closeSidebar();
 }
 $('chatTab').onclick=()=>switchWorkspace('chat');
 $('codeTab').onclick=()=>switchWorkspace('code');
 $('sidebarCode').onclick=()=>switchWorkspace('code');
+for(const tab of [$('chatTab'),$('codeTab')])tab.addEventListener('keydown',event=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  event.preventDefault();const next=tab.id==='chatTab'?'code':'chat';
+  switchWorkspace(next);$(next==='code'?'codeTab':'chatTab').focus();
+});
 function renderFileTree(){
   const root=$('fileTree');root.textContent='';
+  const filter=$('fileFilter').value.toLowerCase().trim();let visible=0;
   for(const group of REPO_SOURCE){
+    const matching=group.files.filter(path=>path.toLowerCase().includes(filter));
+    if(!matching.length)continue;
     const heading=document.createElement('div');heading.className='file-group';heading.textContent=group.section;root.append(heading);
-    for(const path of group.files){
+    for(const path of matching){visible++;
       const b=document.createElement('button');b.type='button';b.className='file-item'+(path===selectedSource?' selected':'');
       b.innerHTML=svg(path.endsWith('.md')?'book':'code','icon sm');
       const label=document.createElement('span');label.textContent=path.split('/').pop();b.append(label);
       b.title=path;b.onclick=()=>viewSource(path);root.append(b);
     }
   }
+  $('fileCount').textContent=visible+'/'+ALLOWED_FILES.size+' files';
+  if(!visible){const empty=document.createElement('p');empty.className='file-empty';empty.textContent='No matching files. Try a different name.';root.append(empty);}
 }
-async function viewSource(path){
+$('fileFilter').addEventListener('input',renderFileTree);
+async function viewSource(path,force=false){
   if(!ALLOWED_FILES.has(path))throw Error('File is not in the public source explorer');
-  selectedSource=path;renderFileTree();$('editorTabTitle').textContent=path.split('/').pop();
+  selectedSource=path;renderFileTree();$('editorTabTitle').textContent=path.split('/').pop();$('codeContextPath').textContent=path;
   $('editorPath').textContent='ATLAS-AI / '+path;
   $('openSource').href=repoUrl(path);
   $('editorMeta').textContent='Loading source…';$('sourcePanel').textContent='';const loading=document.createElement('div');loading.className='editor-empty';loading.textContent='Loading public source…';$('sourcePanel').append(loading);
   const loadId=++sourceLoadId;
+  if(force)sourceCache.delete(path);
   if(sourceCache.has(path)){renderSource(path,sourceCache.get(path));return;}
   let content;
   try{
@@ -512,8 +646,9 @@ function renderSource(path,body){
   sourceText=body;const panel=$('sourcePanel');panel.textContent='';
   const block=document.createElement('pre');block.className='code-lines';
   const lines=body.split('\n');
+  $('jumpLine').max=String(lines.length);$('jumpLine').value='1';
   for(let i=0;i<lines.length;i++){
-    const row=document.createElement('span');row.className='code-line';
+    const row=document.createElement('span');row.className='code-line';row.id='source-line-'+(i+1);
     const line=lines[i];if(/^\s*(?:\/\/|\/\*|\*|#|<!--)/.test(line))row.classList.add('comment');
     else if(/^\s*(?:const|let|function|async|export|import|class|def|return|if|from|name\s*=)/.test(line))row.classList.add('keyword');
     else if(/^\s*(?:<{1}[a-zA-Z]|\[)/.test(line))row.classList.add('title-line');
@@ -525,12 +660,69 @@ function renderSource(path,body){
   $('editorMeta').textContent=lines.length.toLocaleString()+' lines · '+(new Blob([body]).size/1024).toFixed(1)+' KB';
 }
 $('copySource').onclick=()=>{if(sourceText)copyText(sourceText);else toast('Open a source file first');};
-$('askAboutFile').onclick=()=>{
-  const path=selectedSource;
-  switchWorkspace('chat');
-  message.value='Use github_read on '+path+' and explain its purpose, main components, and practical improvements. Do not modify the repository.';
-  fitMessage();message.focus();toast('Prompt prepared · press Send when ready');
+$('refreshSource').onclick=()=>viewSource(selectedSource,true);
+$('wrapSource').onclick=()=>{const on=$('sourcePanel').classList.toggle('wrapped');$('wrapSource').setAttribute('aria-pressed',String(on));toast(on?'Line wrapping enabled':'Line wrapping disabled');};
+function jumpToSourceLine(){
+  if(!sourceText)return toast('Select a source file first');
+  const n=Number($('jumpLine').value),target=document.getElementById('source-line-'+n);
+  if(!Number.isInteger(n)||!target)return toast('Enter a line number in this file');
+  $('sourcePanel').querySelectorAll('.line-highlight').forEach(el=>el.classList.remove('line-highlight'));
+  target.classList.add('line-highlight');target.scrollIntoView({block:'center'});
+}
+$('jumpButton').onclick=jumpToSourceLine;
+$('jumpLine').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();jumpToSourceLine();}});
+$('askAboutFile').onclick=()=>{openCodePane('assistant');$('codeQuestion').value='Explain this file, identify its main responsibilities, and suggest concrete improvements.';$('codeQuestion').focus();};
+let codePaneOpen=true;
+function codePaneIsDrawer(){return window.matchMedia('(max-width:1240px)').matches;}
+function closeCodePane(){
+  $('codeSidePane').classList.remove('on');$('codePaneOverlay').classList.remove('on');
+  if(codePaneIsDrawer())$('toggleCodeAssistant').setAttribute('aria-expanded','false');
+}
+function openCodePane(which='assistant'){
+  switchCodeSideTab(which);
+  codePaneOpen=true;
+  $('codeSidePane').classList.remove('closed');
+  document.querySelector('.code-layout').classList.remove('pane-closed');
+  $('codeSidePane').classList.add('on');
+  if(codePaneIsDrawer())$('codePaneOverlay').classList.add('on');
+  $('toggleCodeAssistant').setAttribute('aria-expanded','true');
+}
+function switchCodeSideTab(which){
+  const assistant=which!=='activity';
+  $('codeAssistantView').hidden=!assistant;$('codeActivityView').hidden=assistant;
+  $('assistantSideTab').classList.toggle('selected',assistant);
+  $('activitySideTab').classList.toggle('selected',!assistant);
+  $('assistantSideTab').setAttribute('aria-selected',String(assistant));
+  $('activitySideTab').setAttribute('aria-selected',String(!assistant));
+  if(assistant)renderCodeAssistant();else renderActivity();
+}
+function renderCodeAssistant(){
+  const root=$('codeAssistantMessages');if(!root)return;
+  root.textContent='';const s=currentSession();
+  const entries=(s?.transcript||[]).slice(-9);
+  if(!entries.length){const empty=document.createElement('p');empty.className='code-assistant-empty';empty.textContent='Ask about the open file without leaving your code. Your question and reply will also appear in Chat.';root.append(empty);}
+  for(const entry of entries){
+    const block=document.createElement('div');block.className='code-ai-message '+entry.role+(entry.error?' error':'');
+    const by=document.createElement('strong');by.textContent=entry.role==='user'?'You':'ATLAS';
+    const p=document.createElement('p');p.textContent=entry.text;
+    block.append(by,p);root.append(block);
+  }
+  if(requestPending&&pendingSession===s?.id){const pending=document.createElement('div');pending.className='code-ai-message pending';pending.textContent='ATLAS is working on your request…';root.append(pending);}
+  root.scrollTop=root.scrollHeight;
+}
+$('assistantSideTab').onclick=()=>switchCodeSideTab('assistant');
+$('activitySideTab').onclick=()=>switchCodeSideTab('activity');
+$('closeCodePane').onclick=closeCodePane;
+$('codePaneOverlay').onclick=closeCodePane;
+$('toggleCodeAssistant').onclick=()=>{
+  if(codePaneIsDrawer()){
+    if($('codeSidePane').classList.contains('on'))closeCodePane();else openCodePane('assistant');
+  }else if(codePaneOpen){
+    codePaneOpen=false;$('codeSidePane').classList.add('closed');document.querySelector('.code-layout').classList.add('pane-closed');$('toggleCodeAssistant').setAttribute('aria-expanded','false');
+  }else openCodePane('assistant');
 };
+for(const item of document.querySelectorAll('.code-quick-question'))item.onclick=()=>{$('codeQuestion').value=item.dataset.question;$('codeQuestion').focus();};
+$('codeQuestion').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('codeAskForm').requestSubmit();}});
 function renderActivity(){
   const root=$('activityList');root.textContent='';const s=currentSession();
   const items=(s?.transcript||[]).flatMap(m=>m.trace||[]).slice(-16).reverse();
@@ -556,11 +748,25 @@ $('consoleForm').onsubmit=async event=>{
   }
 };
 window.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){closeCodePane();return;}
+  if((event.ctrlKey||event.metaKey)&&!event.altKey&&event.key.toLowerCase()==='p'){
+    event.preventDefault();switchWorkspace('code');$('fileFilter').focus();$('fileFilter').select();return;
+  }
   if((event.ctrlKey||event.metaKey)&&!event.altKey&&(event.key==='1'||event.key==='2')){
     event.preventDefault();switchWorkspace(event.key==='1'?'chat':'code');
   }
 });
 
+$('exportChat').onclick=()=>{
+  const s=currentSession();if(!s||!s.transcript.length)return toast('No conversation messages to export yet');
+  const report=['# '+s.title,'','ATLAS Studio conversation export','Export contains conversation text and tool names, not your access key.',''];
+  for(const entry of s.transcript){report.push('## '+(entry.role==='user'?'You':'ATLAS'),' ',entry.text,'');
+    if(entry.trace?.length)report.push('Tool activity: '+entry.trace.map(t=>t.tool+' ('+(t.status||'source')+')').join(', '),'');}
+  const blob=new Blob([report.join('\n')],{type:'text/markdown;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='atlas-conversation-'+new Date().toISOString().slice(0,10)+'.md';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+  toast('Conversation export prepared');closeSidebar();
+};
 // Chats are session-only. Credentials are never persisted or included in page navigation.
 createSession();
 </script>
