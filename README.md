@@ -18,6 +18,10 @@ Live frontend: https://gulfcoastorganics-ai.github.io/ATLAS-AI/
 | `.github/workflows/deploy-worker.yml` | Manually deploy Worker via GitHub Actions |
 | `UPSTREAM_SOURCE.md` | Upstream import provenance and reuse caution |
 
+## ATLAS Developer Mode (frontend update; Worker deployment pending)
+
+The Chat/Code top bar and Connection settings now include a **Developer mode** switch (off by default, session-only). After deploying the updated root `worker.js` to Cloudflare, it applies a more direct, code-first response style with fewer unnecessary clarifying questions. The frontend sends a strict boolean `developerMode` on `/chat`; the `/health` response advertises `developerModeSupported: true` in the updated Worker. Until the Worker is deployed, the UI labels the option as **pending**. This is a preference toggle, **not** an unrestricted model or a bypass for safety requirements. It never grants GitHub writes, shell access, elevated permissions, or disables access keys, CORS, or rate limits.
+
 ## Implemented features
 
 1. **Hosted inference:** `env.AI.run("@cf/google/gemma-4-26b-a4b-it")` through a Workers AI binding.
